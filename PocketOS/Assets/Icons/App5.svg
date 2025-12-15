@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PocketOS App5 - GuessWords</title>
+  <desc id="desc">Wordle-style five tiles on white background.</desc>
+  <rect x="24" y="24" width="208" height="208" rx="24" fill="#ffffff" stroke="#2d2d2d" stroke-width="3" />
+  <g transform="translate(35 112)">
+	<rect x="0" y="0" width="34" height="34" rx="2" fill="#1bb15a" />
+	<rect x="38" y="0" width="34" height="34" rx="2" fill="#e9bd0c" />
+	<rect x="76" y="0" width="34" height="34" rx="2" fill="#6a7374" />
+	<rect x="114" y="0" width="34" height="34" rx="2" fill="#6a7374" />
+	<rect x="152" y="0" width="34" height="34" rx="2" fill="#6a7374" />
+  </g>
+  <g transform="translate(36 138)">
+	<!-- Text on each tile that says GUESS -->
+	<text x="16" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" fill="#ffffff" font-weight="bolder">G</text>
+	<text x="54" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" fill="#ffffff" font-weight="bolder">U</text>
+	<text x="92" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" fill="#ffffff" font-weight="bolder">E</text>
+	<text x="130" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" fill="#ffffff" font-weight="bolder">S</text>
+	<text x="168" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" fill="#ffffff" font-weight="bolder">S</text>
+  </g>
+</svg>

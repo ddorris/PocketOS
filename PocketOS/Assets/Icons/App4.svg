@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PocketOS App4 - HexTiles</title>
+  <desc id="desc">White rounded square with a red center hexagon and surrounding colored hexes.</desc>
+	<rect x="20" y="20" width="216" height="216" rx="28" fill="#ffffff" stroke="#2d2d2d" stroke-width="3" />
+	<defs>
+		<g id="hexagon" transform="rotate(30)">
+			<polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" />			
+		</g>
+
+		<!-- one arrow shape (pointing up) that can be rotated when used -->
+		<g id="arrow">
+			<line x1="0" y1="-12" x2="0" y2="12" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+			<line x1="0" y1="-12" x2="10" y2="-2" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+			<line x1="0" y1="-12" x2="-10" y2="-2" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+		</g>
+	</defs>
+  <g transform="translate(128 128)">
+	<use href="#hexagon" fill="#ff0000" stroke="#ff0000" stroke-width="8" stroke-linejoin="round" />
+	<use href="#hexagon" transform="translate(0 -60)" fill="#ffdd00" stroke="#ffdd00" stroke-width="8" stroke-linejoin="round" />
+	<use href="#hexagon" transform="translate(0 60)" fill="#33cc00" stroke="#33cc00" stroke-width="8" stroke-linejoin="round" />
+	<use href="#hexagon" transform="translate(-52 -30)" fill="#33cc00" stroke="#33cc00" stroke-width="8" stroke-linejoin="round" />
+	<use href="#hexagon" transform="translate(52 -30)" fill="#0077ff" stroke="#0077ff" stroke-width="8" stroke-linejoin="round" />
+	<use href="#hexagon" transform="translate(-52 30)" fill="#0077ff" stroke="#0077ff" stroke-width="8" stroke-linejoin="round" />
+	<use href="#hexagon" transform="translate(52 30)" fill="#ffdd00" stroke="#ffdd00" stroke-width="8" stroke-linejoin="round" />
+	<!-- white arrows on each tile pointing in specific directions i will give you -->
+	<!-- red center tile has an up arrow -->
+	<use href="#arrow" />
+	<!-- green tiles have arrows pointing diagonal down and left -->
+	<use href="#arrow" transform="translate(-52 -30) rotate(240)" />
+	<use href="#arrow" transform="translate(0 60) rotate(240)" />
+	<!-- blue tiles have arrows pointing diagonal down and right -->
+	<use href="#arrow" transform="translate(-52 30) rotate(120)" />
+	<use href="#arrow" transform="translate(52 -30) rotate(120)" />
+	<!-- yellow tiles have arrows pointing diagonal up and right -->
+	<use href="#arrow" transform="translate(0 -60) rotate(45)" />
+	<use href="#arrow" transform="translate(52 30) rotate(45)" />
+  </g>
+</svg>

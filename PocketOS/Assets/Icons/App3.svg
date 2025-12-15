@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PocketOS App3 - DinoTiles</title>
+  <desc id="desc">Orange background with three overlapping tiles and brown dino footprints.</desc>
+	<rect x="16" y="16" width="224" height="224" rx="36" fill="#ff9900" />
+	<defs>
+		<g id="dinoFootprint">
+			<circle cx="76" cy="152" r="16" fill="#663300" stroke="#fff6d6" stroke-width="2" stroke-linejoin="round" />
+			<line x1="60" y1="155" x2="92" y2="155" stroke="#fff6d6" stroke-width="2" />
+			<g transform="translate(0 -21)" >
+				<!-- 2 triangles cutout shape from the top half of the circle -->
+				<!-- what remains looks like 3 toes pointing up on a footprint -->
+				<polygon points="66,152 70,176 78,152" fill="#fff6d6" />
+				<polygon points="74,152 82,176 86,152" fill="#fff6d6" />
+			</g>
+		</g>
+	</defs>
+
+  <!-- tile -->
+  <g transform="translate(5 0.5)" >
+	<rect x="40" y="120" width="60" height="80" rx="12" fill="#cc5200" stroke="#cc5200" stroke-width="2" stroke-linejoin="round" />
+	<rect x="46" y="112" width="60" height="80" rx="12" fill="#fff6d6" stroke="#ff9900" stroke-width="2" stroke-linejoin="round" />
+	<use href="#dinoFootprint" />
+  </g>
+ 
+  <!-- tile -->
+  <g transform="translate(105 0.5)" >
+	<rect x="40" y="120" width="60" height="80" rx="12" fill="#cc5200" stroke="#cc5200" stroke-width="2" stroke-linejoin="round" />
+	<rect x="46" y="112" width="60" height="80" rx="12" fill="#fff6d6" stroke="#ff9900" stroke-width="2" stroke-linejoin="round" />
+	<use href="#dinoFootprint" />
+  </g>
+
+  <!-- tile -->
+  <g transform="translate(55 -60.5)" >
+	<rect x="40" y="120" width="60" height="80" rx="12" fill="#cc5200" stroke="#cc5200" stroke-width="2" stroke-linejoin="round" />
+	<rect x="46" y="112" width="60" height="80" rx="12" fill="#fff6d6" stroke="#ff9900" stroke-width="2" stroke-linejoin="round" />
+	<use href="#dinoFootprint" />
+  </g>
+</svg>

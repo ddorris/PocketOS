@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PocketOS App2 - Sudoku</title>
+  <desc id="desc">Blue outlined 3x3 Sudoku block on white.</desc>
+  <rect x="16" y="16" width="224" height="224" rx="32" fill="#0000ff" />
+<g transform="translate(48 48)">
+	<g stroke="#0000ff" stroke-width="4">
+		<rect x="0" y="0" width="160" height="160" fill="#ffffff" />
+		<rect x="0" y="0" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="53.34" y="0" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="106.66" y="0" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="0" y="53.34" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="53.34" y="53.34" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="106.66" y="53.34" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="0" y="106.66" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="53.34" y="106.66" width="53.34" height="53.34" fill="#ffffff" />
+		<rect x="106.66" y="106.66" width="53.34" height="53.34" fill="#ffffff" />
+	</g>
+	<!-- numbers 1-9 in some of the cells for this block -->
+	<text x="26.67" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#0000ff" font-weight="bold">5</text>
+	<text x="80" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" font-weight="bold">3</text>
+	<text x="133.33" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#0000ff" font-weight="bold">4</text>
+	<text x="26.67" y="89.34" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" font-weight="bold">6</text>
+	<text x="80" y="89.34" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#0000ff" font-weight="bold">7</text>
+	<text x="133.33" y="89.34" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#0000ff" font-weight="bold">2</text>
+	<text x="26.67" y="142.68" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#0000ff" font-weight="bold">1</text>
+	<text x="80" y="142.68" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" font-weight="bold">9</text>
+	<text x="133.33" y="142.68" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" font-weight="bold">8</text>
+</g>
+</svg>

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		// Configure Live Server to serve the PocketOS folder on the expected host/port
+		"liveServer.settings.host": "127.0.0.1",
+		"liveServer.settings.port": 5500,
+		"liveServer.settings.root": "/PocketOS"
+	}
+}
