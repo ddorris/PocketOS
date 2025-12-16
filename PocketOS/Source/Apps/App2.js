@@ -177,6 +177,7 @@ export default class App2 extends System {
 
 		// Grid
 		this.GLOBAL.grid = e(this.appDiv, 'div', 'app2-grid');
+		this.GLOBAL.grid.setAttribute('role', 'grid');
 		this.GLOBAL.grid.blocks = [];
 		for (let t = 0; t < 9; t++) {
 			const block = e(this.GLOBAL.grid, 'div', 'app2-block');
@@ -185,18 +186,23 @@ export default class App2 extends System {
 				const input = e(block, 'input', 'app2-cell');
 				input.maxLength = 1;
 				input.value = '';
+				input.setAttribute('inputmode', 'numeric');
+				input.setAttribute('autocomplete', 'off');
+				input.setAttribute('role', 'gridcell');
 				// Doku's approach: accept anything, blank out non-numbers via isNaN
 				input.addEventListener('input', () => { input.value = isNaN(input.value) ? '' : input.value; });
 				block.cells.push(input);
 			}
 			this.GLOBAL.grid.blocks.push(block);
 		}
-		this.GLOBAL.grid.addEventListener('input', () => this.showGridState());
+		this.GLOBAL.grid.addEventListener('input', () => { this.showGridState(); this.highlightConflicts(); });
 
 		// GUI
 		this.GLOBAL.gui = e(this.appDiv, 'div', 'app2-gui');
-		e(this.GLOBAL.gui, 'label', null, 'DIFFICULTY:');
+		const labelEl = e(this.GLOBAL.gui, 'label', null, 'DIFFICULTY:');
 		const select = e(this.GLOBAL.gui, 'select', 'app2-dropdown');
+		select.id = 'app2-difficulty';
+		labelEl.setAttribute('for', 'app2-difficulty');
 		for (let key in this.DIFFICULTY_LEVEL) {
 			const opt = e(select, 'option');
 			opt.value = key;
@@ -218,14 +224,115 @@ export default class App2 extends System {
 			if (cell) cell.classList.add('focused');
 		};
 
+		// Cross highlight helpers
+		this.clearCrossHighlights = () => {
+			this.GLOBAL.grid.blocks.forEach(b => b.cells.forEach(c => c.classList.remove('cross')));
+		};
+		this.updateCrossHighlights = (cell) => {
+			if (!cell) return;
+			this.clearCrossHighlights();
+			// find r,c of the cell
+			let rIdx = -1, cIdx = -1;
+			for (let r = 0; r < 9; r++) {
+				for (let c = 0; c < 9; c++) {
+					const bi = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+					const ci = (r % 3) * 3 + (c % 3);
+					if (this.GLOBAL.grid.blocks[bi].cells[ci] === cell) { rIdx = r; cIdx = c; break; }
+				}
+				if (rIdx !== -1) break;
+			}
+			if (rIdx === -1) return;
+			// highlight row and column
+			for (let c = 0; c < 9; c++) {
+				const bi = Math.floor(rIdx / 3) * 3 + Math.floor(c / 3);
+				const ci = (rIdx % 3) * 3 + (c % 3);
+				this.GLOBAL.grid.blocks[bi].cells[ci].classList.add('cross');
+			}
+			for (let r = 0; r < 9; r++) {
+				const bi = Math.floor(r / 3) * 3 + Math.floor(cIdx / 3);
+				const ci = (r % 3) * 3 + (cIdx % 3);
+				this.GLOBAL.grid.blocks[bi].cells[ci].classList.add('cross');
+			}
+			// highlight box
+			const br = Math.floor(rIdx / 3) * 3;
+			const bc = Math.floor(cIdx / 3) * 3;
+			for (let a = 0; a < 9; a++) {
+				const r = br + Math.floor(a / 3);
+				const c = bc + (a % 3);
+				const bi = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+				const ci = (r % 3) * 3 + (c % 3);
+				this.GLOBAL.grid.blocks[bi].cells[ci].classList.add('cross');
+			}
+		};
+
+		// Conflict highlighting
+		this.highlightConflicts = () => {
+			// Clear previous
+			this.GLOBAL.grid.blocks.forEach(b => b.cells.forEach(c => c.classList.remove('conflict')));
+			// rows
+			for (let r = 0; r < 9; r++) {
+				const vals = [];
+				for (let c = 0; c < 9; c++) {
+					const v = this.getCellValue(r, c);
+					vals.push(v);
+				}
+				for (let c = 0; c < 9; c++) {
+					const v = vals[c];
+					if (v && vals.filter(x => x === v).length > 1) {
+						const bi = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+						const ci = (r % 3) * 3 + (c % 3);
+						this.GLOBAL.grid.blocks[bi].cells[ci].classList.add('conflict');
+					}
+				}
+			}
+			// columns
+			for (let c = 0; c < 9; c++) {
+				const vals = [];
+				for (let r = 0; r < 9; r++) {
+					vals.push(this.getCellValue(r, c));
+				}
+				for (let r = 0; r < 9; r++) {
+					const v = vals[r];
+					if (v && vals.filter(x => x === v).length > 1) {
+						const bi = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+						const ci = (r % 3) * 3 + (c % 3);
+						this.GLOBAL.grid.blocks[bi].cells[ci].classList.add('conflict');
+					}
+				}
+			}
+			// boxes
+			for (let br = 0; br < 9; br += 3) {
+				for (let bc = 0; bc < 9; bc += 3) {
+					const vals = [];
+					for (let a = 0; a < 9; a++) {
+						const r = br + Math.floor(a / 3);
+						const c = bc + (a % 3);
+						vals.push(this.getCellValue(r, c));
+					}
+					for (let a = 0; a < 9; a++) {
+						const r = br + Math.floor(a / 3);
+						const c = bc + (a % 3);
+						const v = vals[a];
+						if (v && vals.filter(x => x === v).length > 1) {
+							const bi = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+							const ci = (r % 3) * 3 + (c % 3);
+							this.GLOBAL.grid.blocks[bi].cells[ci].classList.add('conflict');
+						}
+					}
+				}
+			}
+		};
+
 		this.GLOBAL.grid.addEventListener('focus', (evt) => {
 			if (evt.target.classList.contains('app2-cell')) {
 				setCellFocus(evt.target);
+				this.updateCrossHighlights(evt.target);
 			}
 		}, true);
 		this.GLOBAL.grid.addEventListener('blur', (evt) => {
 			if (evt.target.classList.contains('app2-cell')) {
 				setCellFocus(null);
+				this.clearCrossHighlights();
 			}
 		}, true);
 
