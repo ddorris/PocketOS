@@ -165,4 +165,13 @@ export default class DinoDock {
 	getTileCount() {
 		return this.tiles.length;
 	}
+
+	updateGameState(isBoardWon) {
+		if (this.gameState !== 'playing') return;
+		
+		// Win if board is empty and dock is empty
+		if (isBoardWon && this.tiles.length === 0) {
+			this.gameState = 'won';
+		}
+	}
 }

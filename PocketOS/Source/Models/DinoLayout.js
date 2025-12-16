@@ -10,25 +10,18 @@ export function buildTurtleLayout() {
 			}
 		}
 	};
-
 	// Base layer (8x4) with top/bottom padding rows
 	addRect(0, 0, 0, 8, 4);   // 32
 	addRect(0, 2, -1, 4, 1);  // +4 => 36
 	addRect(0, 2, 4, 4, 1);   // +4 => 40
-
 	// Layer 1 (offset 0.5, 0.5) 7x3
 	addRect(1, 0.5, 0.5, 7, 3);   // +21 => 61
-
 	// Layer 2 (offset 1, 1) 6x2
 	addRect(2, 1, 1, 6, 2);       // +12 => 73
-
-	// Layer 3 (offset 2.0, 1.0) 3x1 centered over Layer 2
-	addRect(3, 2.0, 1.0, 3, 1);     // +3  => 76
-
-	// Layer 4 (top pair with center gap over Layer 3): positions at 2.0 and 4.0, centered on Layer 3 y
-	slots.push({ id: `t${idCounter++}`, gx: 2.5, gy: 1.5, layer: 4 });
-	slots.push({ id: `t${idCounter++}`, gx: 4.5, gy: 1.5, layer: 4 });   // +2  => 78
-
+	// Layer 3 (offset 2.5, 1.5) 3x1 centered over Layer 2 with half-tile reveal
+	addRect(3, 2.5, 1.5, 3, 1);     // +3  => 76
+	// Layer 4 (top pair, half-tile horizontal offset to cover Layer 3)
+	addRect(4, 3.0, 1.5, 2, 1);   // +2 => 78
 	return { name: 'turtle', slots };
 }
 

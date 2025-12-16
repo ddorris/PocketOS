@@ -21,8 +21,8 @@ export default class GuessWordsHeader {
 		this.resetButton = new Button({
 			x: 0, y: 0, width: 60, height: 40,
 			label: 'Reset',
-			bgColor: '#538d4e',
-			hoverColor: '#6fa863',
+			bgColor: '#565758',
+			hoverColor: '#6a6a6c',
 			onClick: () => this.onReset?.()
 		});
 	}
