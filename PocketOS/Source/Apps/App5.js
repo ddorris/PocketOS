@@ -73,6 +73,8 @@ export default class App5 extends System {
 			document.removeEventListener('keydown', this.keyListener);
 		}
 		this.keyListener = (e) => {
+			// Ignore all keyboard input when app is not enabled
+			if (!this.enabled) return;
 			if (e.ctrlKey || e.metaKey || e.altKey) return;
 			if (e.key === 'Enter') e.preventDefault();
 			this.handleInput(e.key);
