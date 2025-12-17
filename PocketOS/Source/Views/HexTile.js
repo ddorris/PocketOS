@@ -29,7 +29,7 @@ export default class HexTile {
 		// Apply face color by direction
 		const face = DIR_COLORS[this.arrowDir] || this.hex.fill;
 		this.hex.setStyle({ fill: face });
-		this.arrow = new HexTileArrow({ stroke: '#ffffff', strokeWeight: Math.max(3, Math.round(radius * 0.12)) });
+		this.arrow = new HexTileArrow({ stroke: '#ffffff', strokeWeight: Math.max(1, Math.round(radius * 0.1)) });
 	}
 
 	setPosition(x, y) {

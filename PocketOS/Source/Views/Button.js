@@ -11,6 +11,7 @@ export default class Button {
 		this.isActive = false;
 		this.cornerRadius = config.cornerRadius ?? 5;
 		this.fontSize = config.fontSize ?? 12;
+		this.strokeWeight = config.strokeWeight ?? 1;
 
 		// Style config (defaults can be overridden per instance)
 		this.colors = {
@@ -49,6 +50,7 @@ export default class Button {
 
 		// Background
 		fill(this.isActive ? this.colors.active : this.colors.default);
+		strokeWeight(this.strokeWeight);
 		stroke(this.colors.stroke);
 		rect(0, 0, this.width, this.height, this.cornerRadius);
 
@@ -61,11 +63,11 @@ export default class Button {
 			textY = this.height * 0.85;
 		}
 
-			// Label
+		// Label
 		fill(this.colors.text);
 		noStroke();
 		textAlign(CENTER, CENTER);
-			textSize(this.fontSize);
+		textSize(this.fontSize);
 		text(this.label, this.width / 2, textY);
 
 		pop();

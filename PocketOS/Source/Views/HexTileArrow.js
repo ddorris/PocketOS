@@ -1,5 +1,5 @@
 export default class HexTileArrow {
-  constructor({ stroke = '#ffffff', strokeWeight = 4 } = {}) {
+  constructor({ stroke = '#ffffff', strokeWeight = 3 } = {}) {
     this.stroke = stroke;
     this.strokeWeight = strokeWeight;
   }
@@ -16,9 +16,9 @@ export default class HexTileArrow {
     const angle = (Math.PI / 180) * angleDeg;
 
     // Centered arrow geometry: spans from tail to tip with better balance
-    const tipY = radius * 0.45;      // tip extends toward edge
-    const tailY = radius * -0.45;    // tail extends back (centered)
-    const headOffset = radius * 0.35; // longer arrowhead spread
+    const tipY = radius * 0.3;      // tip extends toward edge
+    const tailY = radius * -0.3;    // tail extends back (centered)
+    const headOffset = radius * 0.25; // longer arrowhead spread
 
     const rotatePoint = (px, py) => {
       const cosA = Math.cos(angle);
