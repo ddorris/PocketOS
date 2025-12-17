@@ -96,6 +96,8 @@ export default class App4 extends System {
 	mousePressed() {
 		if (mouseY < this.appDockHeight) return false;
 		if (this.resetButton && this.resetButton.checkClick(mouseX, mouseY)) return true;
+		// Board tile click
+		if (this.board && this.board.handleClick(mouseX, mouseY)) return true;
 		return false;
 	}
 
