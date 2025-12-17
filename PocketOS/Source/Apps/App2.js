@@ -1,13 +1,12 @@
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
-import WebSudoku from '../Views/WebSudoku.js';
+import SudokuGame from '../Views/SudokuGame.js';
 
-// App2 entry point: wires Sudoku model with the WebSudoku view inside PocketOS
+// App2 entry point: runs the p5-based SudokuGame inside PocketOS
 export default class App2 extends System {
 	constructor() {
 		super();
-		this.view = null;
-		this._canvasEventsDisabled = false;
+		this.game = null; // p5 SudokuGame
 	}
 
 	setup() {
@@ -17,31 +16,24 @@ export default class App2 extends System {
 			this.appInfo = new AppInfo({ info: appInfo, icon });
 		}
 
-		// Initialize Web UI for Sudoku
-		this.view = new WebSudoku();
-		this.view.mount();
+		this.game = new SudokuGame({ isEnabled: () => this.enabled });
 	}
 
 	draw() {
-		if (!this.view) return;
 		const enable = !!this.enabled;
-		this.view.setEnabled(enable);
-
-		// Toggle canvas interactivity so events do not leak to p5 when active
-		if (enable !== this._canvasEventsDisabled) {
-			const canvases = Array.from(document.getElementsByTagName('canvas'));
-			for (const c of canvases) {
-				c.style.pointerEvents = enable ? 'none' : '';
-				c.style.zIndex = enable ? '0' : '';
-			}
-			this._canvasEventsDisabled = enable;
+		if (enable && this.game) {
+			this.game.draw();
 		}
 	}
 
+	mousePressed() {
+		if (!this.enabled || !this.game) return false;
+		return this.game.mousePressed(mouseX, mouseY);
+	}
+
+	touchStarted() { return this.mousePressed(); }
+
 	cleanup() {
-		if (this.view) {
-			this.view.cleanup();
-			this.view = null;
-		}
+		if (this.game) { this.game.cleanup(); this.game = null; }
 	}
 }

@@ -10,6 +10,7 @@ export default class Button {
 		this.id = config.id;
 		this.isActive = false;
 		this.cornerRadius = config.cornerRadius ?? 5;
+		this.fontSize = config.fontSize ?? 12;
 
 		// Style config (defaults can be overridden per instance)
 		this.colors = {
@@ -60,11 +61,11 @@ export default class Button {
 			textY = this.height * 0.85;
 		}
 
-		// Label
+			// Label
 		fill(this.colors.text);
 		noStroke();
 		textAlign(CENTER, CENTER);
-		textSize(12);
+			textSize(this.fontSize);
 		text(this.label, this.width / 2, textY);
 
 		pop();
