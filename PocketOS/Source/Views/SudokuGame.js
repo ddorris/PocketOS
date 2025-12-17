@@ -46,7 +46,7 @@ export default class SudokuGame {
 		if (!document.getElementById('app2-font-local')) {
 			const style = document.createElement('style');
 			style.id = 'app2-font-local';
-			style.textContent = `@font-face { font-family: 'Varela Round'; src: url('Assets/Fonts/VarelaRound-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }`;
+			style.textContent = `@font-face { font-family: 'Varela Round'; src: url('./PocketOS/Assets/Fonts/VarelaRound-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }`;
 			document.head.appendChild(style);
 		}
 
@@ -117,6 +117,10 @@ export default class SudokuGame {
 		const x = this.wrapperRect.x + this.wrapperPadding;
 		const w = this.wrapperRect.w - this.wrapperPadding * 2;
 		const y = this.controlsRect.y;
+
+		// we are going to change font styles so we should save/restore
+		push();
+
 		// Label + buttons
 		noStroke();
 		fill(151);
@@ -196,6 +200,9 @@ export default class SudokuGame {
 		const newX = rightX - dims.newW;
 		this.newButton.setBounds(newX, cy, dims.newW, this.newButton.height);
 		this.newButton.draw();
+
+		// restore font styles
+		pop();
 	}
 
 	drawWrapper() {

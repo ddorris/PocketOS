@@ -3,7 +3,7 @@ import System from './System.js';
 export default class AppLoadingSystem extends System {
 	async setup() {
 		try {
-			const apps = await this.load('Source/Data/InstalledApps.json');
+			const apps = await this.load('./PocketOS/Source/Data/InstalledApps.json');
 			this.engine.state.apps = apps;
 			// Load and register all apps sequentially
 			for (const app of apps) {

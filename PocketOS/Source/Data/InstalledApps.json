@@ -4,9 +4,9 @@
 		"key": "solitaire",
 		"name": "Solitaire",
 		"description": "A classic card game",
-		"entry": "Source/Apps/App1.js",
-		"icon": "Assets/Icons/App1.svg",
-		"model": "Source/Models/Solitaire.js",
+		"entry": "./Source/Apps/App1.js",
+		"icon": "./PocketOS/Assets/Icons/App1.svg",
+		"model": "./Source/Models/Solitaire.js",
 		"bundle": {}
 	},
 	{
@@ -14,9 +14,9 @@
 		"key": "sudoku",
 		"name": "Sudoku",
 		"description": "A number puzzle game",
-		"entry": "Source/Apps/App2.js",
-		"icon": "Assets/Icons/App2.svg",
-		"model": "Source/Models/Sudoku.js",
+		"entry": "./Source/Apps/App2.js",
+		"icon": "./PocketOS/Assets/Icons/App2.svg",
+		"model": "./Source/Models/Sudoku.js",
 		"bundle": {}
 	},
 	{
@@ -24,14 +24,14 @@
 		"key": "dinotiles",
 		"name": "Dino Tiles",
 		"description": "A tile-matching game with dinosaurs",
-		"entry": "Source/Apps/App3.js",
-		"icon": "Assets/Icons/App3.svg",
-		"model": "Source/Models/DinoTiles.js",
+		"entry": "./Source/Apps/App3.js",
+		"icon": "./PocketOS/Assets/Icons/App3.svg",
+		"model": "./Source/Models/DinoTiles.js",
 		"bundle": {
 			"spriteSheets": [
 				{
 					"key": "dinotiles",
-					"url": "Assets/DinoTiles.png",
+					"url": "./PocketOS/Assets/DinoTiles.png",
 					"sx": [37, 285, 520, 757],
 					"sy": [40, 342, 647, 951, 1255, 1559, 1863],
 					"sw": 233, "sh": 302,
@@ -46,9 +46,9 @@
 		"key": "hextiles",
 		"name": "Hex Tiles",
 		"description": "A hexagonal tile puzzle game",
-		"entry": "Source/Apps/App4.js",
-		"icon": "Assets/Icons/App4.svg",
-		"model": "Source/Models/HexTiles.js",
+		"entry": "./Source/Apps/App4.js",
+		"icon": "./PocketOS/Assets/Icons/App4.svg",
+		"model": "./Source/Models/HexTiles.js",
 		"bundle": {}
 	},
 	{
@@ -56,13 +56,13 @@
 		"key": "guesswords",
 		"name": "Guess Words",
 		"description": "A word guessing game",
-		"entry": "Source/Apps/App5.js",
-		"icon": "Assets/Icons/App5.svg",
-		"model": "Source/Models/GuessWords.js",
+		"entry": "./Source/Apps/App5.js",
+		"icon": "./PocketOS/Assets/Icons/App5.svg",
+		"model": "./Source/Models/GuessWords.js",
 		"bundle": {
 			"wordLists": {
-				"allowed": "Assets/wordle-allowed-guesses.txt",
-				"answers": "Assets/wordle-answers-alphabetical.txt"
+				"allowed": "./PocketOS/Assets/wordle-allowed-guesses.txt",
+				"answers": "./PocketOS/Assets/wordle-answers-alphabetical.txt"
 			}
 		}
 	}

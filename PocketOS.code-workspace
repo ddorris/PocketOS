@@ -5,9 +5,9 @@
 		}
 	],
 	"settings": {
-		// Configure Live Server to serve the PocketOS folder on the expected host/port
+		// Configure Live Server to serve from the root where index.html is
 		"liveServer.settings.host": "127.0.0.1",
 		"liveServer.settings.port": 5500,
-		"liveServer.settings.root": "/PocketOS"
+		"liveServer.settings.root": "/"
 	}
 }
