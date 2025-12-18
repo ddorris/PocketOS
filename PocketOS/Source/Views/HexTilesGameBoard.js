@@ -59,7 +59,7 @@ export default class HexTilesGameBoard {
 		}
 	}
 
-	draw(p) {
+	draw() {
 		// Layout and background logic from App4
 		if (typeof width !== 'undefined') {
 			const marginX = 40;
@@ -109,24 +109,23 @@ export default class HexTilesGameBoard {
 			pop();
 		}
 
-		// Draw board slots and tiles
-		const ctx = p || window;
-		ctx.push();
-		this.slots.forEach((slot, idx) => {
-			const coords = this.getSlotCoords(idx);
-			slot.setPosition(coords.x, coords.y);
-			slot.draw(ctx);
-		});
-		const tiles = this.model.getTiles();
-		tiles.forEach((entry) => {
-			if (entry && entry.present) {
-				const { q, r, dir } = entry;
-				const { x, y } = this.axialToPixel(q, r);
-				const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
-				tile.draw(ctx);
-			}
-		});
-		ctx.pop();
+		   // Draw board slots and tiles
+		   push();
+		   this.slots.forEach((slot, idx) => {
+			   const coords = this.getSlotCoords(idx);
+			   slot.setPosition(coords.x, coords.y);
+			   slot.draw();
+		   });
+		   const tiles = this.model.getTiles();
+		   tiles.forEach((entry) => {
+			   if (entry && entry.present) {
+				   const { q, r, dir } = entry;
+				   const { x, y } = this.axialToPixel(q, r);
+				   const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
+				   tile.draw();
+			   }
+		   });
+		   pop();
 	}
 
 	getSlotCoords(idx) {

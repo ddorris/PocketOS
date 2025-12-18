@@ -84,15 +84,14 @@ export default class Hexagon {
 		return points;
 	}
 
-	draw(p) {
-		const ctx = p || window;
-		ctx.push();
-		ctx.fill(this.fill);
-		ctx.noStroke();
-		ctx.beginShape();
+	draw() {
+		push();
+		fill(this.fill);
+		noStroke();
+		beginShape();
 		const pts = this.cornerRadiusRatio > 0 ? this.getRoundedPathPoints(6) : this.getVertices();
-		pts.forEach(v => ctx.vertex(v.x, v.y));
-		ctx.endShape(ctx.CLOSE);
-		ctx.pop();
+		pts.forEach(v => vertex(v.x, v.y));
+		endShape(CLOSE);
+		pop();
 	}
 }

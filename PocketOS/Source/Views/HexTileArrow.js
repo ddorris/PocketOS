@@ -11,8 +11,7 @@ export default class HexTileArrow {
 
 	// Draw an arrow composed of 3 lines, oriented by angleDeg around (x, y)
 	// Geometry is defined for an "up" arrow then rotated.
-	draw(p, { x, y, radius, angleDeg = 270 }) {
-		const ctx = p || window;
+	draw({ x, y, radius, angleDeg = 270 }) {
 		const angle = (Math.PI / 180) * angleDeg;
 
 		// Centered arrow geometry: spans from tail to tip with better balance
@@ -34,17 +33,17 @@ export default class HexTileArrow {
 		const leftHead = rotatePoint(-headOffset, tipY - headOffset);
 		const rightHead = rotatePoint(headOffset, tipY - headOffset);
 
-		ctx.push();
-		ctx.stroke(this.stroke);
-		ctx.strokeWeight(this.strokeWeight);
-		if (ctx.strokeCap) ctx.strokeCap(ctx.ROUND);
+		push();
+		stroke(this.stroke);
+		strokeWeight(this.strokeWeight);
+		if (typeof strokeCap === 'function') strokeCap(ROUND);
 
 		// stem
-		ctx.line(tip.x, tip.y, tail.x, tail.y);
+		line(tip.x, tip.y, tail.x, tail.y);
 		// arrow head
-		ctx.line(tip.x, tip.y, leftHead.x, leftHead.y);
-		ctx.line(tip.x, tip.y, rightHead.x, rightHead.y);
+		line(tip.x, tip.y, leftHead.x, leftHead.y);
+		line(tip.x, tip.y, rightHead.x, rightHead.y);
 
-		ctx.pop();
+		pop();
 	}
 }

@@ -29,10 +29,10 @@ export default class HexTile {
 		}
 	}
 
-	draw(p) {
-		this.hex.draw(p);
+	draw() {
+		this.hex.draw();
 		const dirObj = HEX_DIRECTIONS.find(d => d.name === this.arrowDir);
 		const angle = dirObj ? dirObj.angle : 270;
-		this.arrow.draw(p, { x: this.hex.x, y: this.hex.y, radius: this.hex.radius, angleDeg: angle });
+		this.arrow.draw({ x: this.hex.x, y: this.hex.y, radius: this.hex.radius, angleDeg: angle });
 	}
 }
