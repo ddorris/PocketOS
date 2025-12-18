@@ -2,7 +2,6 @@ import Button from '../Views/Button.js';
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
 import HexTilesGameBoard from '../Views/HexTilesGameBoard.js';
-import Hexagon from '../Views/Hexagon.js';
 import HexTilesModel from '../Models/HexTiles.js';
 
 export default class App4 extends System {
@@ -10,8 +9,6 @@ export default class App4 extends System {
 		super();
 		this.appDockHeight = 120;
 		this.board = null;
-		this._fitCache = null;
-		this.backgroundHexagon = null;
 	}
 
 	setup() {
@@ -28,70 +25,16 @@ export default class App4 extends System {
 			label: 'Reset',
 			bgColor: '#565758',
 			hoverColor: '#6a6a6c',
-			onClick: () => {
-				this.model.reset();
-				this.board.buildBoard();
-			}
+			onClick: () => { this.model.reset(); }
 		});
 	}
 
 	draw() {
 		if (this.enabled === false) return;
-
-		// Fit or refit when inputs change (canvas, grid radius, padding)
-		if (this.board && typeof width !== 'undefined') {
-			const marginX = 40; // padding around the board
-			const marginY = -80; // padding from top (to center better with dock and controls)
-			const playableWidth = width - marginX * 2;
-			const playableHeight = height - this.appDockHeight;
-			const G = this.board.gridRadius;
-			const paddingRatio = this.board.paddingRatio;
-
-			// Let's draw one big hexagon behind the board for fun, using Hexagon.js
-			if (!this.backgroundHexagon) {
-				// Use rotation 30 for pointy-top, and match fill
-				this.backgroundHexagon = new Hexagon({
-					x: width / 2,
-					y:  marginY + (this.appDockHeight + playableHeight / 2),
-					radius: 1,
-					fill: '#333',
-					cornerRadiusRatio: this.board.cornerRadiusRatio,
-					rotation: 30
-				});
-			}
-			// Draw the background hexagon
-			push();
-			this.backgroundHexagon.draw();
-			pop();
-
-			// Create a cache key to avoid redundant calculations
-			const key = `${playableWidth}x${playableHeight}|G${G}|k${paddingRatio.toFixed(4)}|rounded:${this.board.useRounded ? 1 : 0}`;
-			if (!this._fitCache || this._fitCache !== key) {
-				const sqrt3 = Math.sqrt(3);
-				const spacingMultiplier = 1 + paddingRatio;
-				// If rounded hexes are enabled, we render without strokes
-				const strokeRatio = this.board.useRounded ? 0 : (paddingRatio * 0.25); // matches board stroke scaling
-				const widthCoeff = 3 * G * spacingMultiplier + 2 + strokeRatio;
-				const heightCoeff = sqrt3 * (2 * G * spacingMultiplier + 1) + strokeRatio;
-				const maxRadiusForWidth = playableWidth / widthCoeff;
-				const maxRadiusForHeight = playableHeight / heightCoeff;
-				const radius = Math.max(1, Math.min(maxRadiusForWidth, maxRadiusForHeight));
-				const originX = width / 2;
-				const originY = marginY + (this.appDockHeight + playableHeight / 2);
-				this.board.setLayout({ originX, originY, radius });
-				this._fitCache = key;
-				this.boardReady = true;
-			}
-		}
-
-		if (this.board) {
-			this.board.draw();
-			this.backgroundHexagon.radius = this.board.radius * (this.board.gridRadius * 2 + 1) * 1.1;
-		}
-
+		if (this.board) this.board.draw();
 		if (this.resetButton) {
 			this.resetButton.x = (width - this.resetButton.width) / 2;
-			this.resetButton.y = height - this.resetButton.height - 160;
+			this.resetButton.y = height - this.resetButton.height - 200;
 			this.resetButton.draw();
 		}
 	}
@@ -99,7 +42,6 @@ export default class App4 extends System {
 	mousePressed() {
 		if (mouseY < this.appDockHeight) return false;
 		if (this.resetButton && this.resetButton.checkClick(mouseX, mouseY)) return true;
-		// Board tile click
 		if (this.board && this.board.handleClick(mouseX, mouseY)) return true;
 		return false;
 	}

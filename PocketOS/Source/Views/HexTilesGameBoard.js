@@ -11,6 +11,9 @@ export default class HexTilesGameBoard {
 		this.gridRadius = 3;
 		this.slots = [];
 		this.model = model;
+		this._fitCache = null;
+		this.backgroundHexagon = null;
+		this.appDockHeight = 120; // for layout, matches App4
 	}
 
 	setLayout({ originX, originY, radius, paddingRatio, gridRadius }) {
@@ -22,7 +25,7 @@ export default class HexTilesGameBoard {
 			this.gridRadius = gridRadius;
 			// The model should be replaced by the app, not here
 		}
-		this.buildBoard();
+		this.buildSlots();
 	}
 
 	axialToPixel(q, r) {
@@ -56,29 +59,69 @@ export default class HexTilesGameBoard {
 		}
 	}
 
-	// No buildPieces; tile data comes from model
-
-	buildBoard() {
-		this.buildSlots();
-		// No buildPieces; handled by model
-	}
-
 	draw(p) {
+		// Layout and background logic from App4
+		if (typeof width !== 'undefined') {
+			const marginX = 40;
+			const maxBoardWidth = 480;
+			const topOffset = 360; // px from top of page to top of board
+			const bottomOffset = 100; // px from bottom of board to bottom of page (for reset button)
+			const playableWidth = Math.min(width - marginX * 2, maxBoardWidth);
+			const playableHeight = Math.max(0, height - topOffset - bottomOffset);
+			const G = this.gridRadius;
+			const paddingRatio = this.paddingRatio;
+
+			// Background hexagon
+			if (!this.backgroundHexagon) {
+				this.backgroundHexagon = new Hexagon({
+					x: width / 2,
+					y: topOffset,
+					radius: 1,
+					fill: '#333',
+					cornerRadiusRatio: this.cornerRadiusRatio,
+					rotation: 30
+				});
+			}
+			// Layout calculation and cache
+			const key = `${playableWidth}x${playableHeight}|G${G}|k${paddingRatio.toFixed(4)}|rounded:${this.useRounded ? 1 : 0}`;
+			if (!this._fitCache || this._fitCache !== key) {
+				const sqrt3 = Math.sqrt(3);
+				const spacingMultiplier = 1 + paddingRatio;
+				const strokeRatio = this.useRounded ? 0 : (paddingRatio * 0.25);
+				const widthCoeff = 3 * G * spacingMultiplier + 2 + strokeRatio;
+				const heightCoeff = sqrt3 * (2 * G * spacingMultiplier + 1) + strokeRatio;
+				const maxRadiusForWidth = playableWidth / widthCoeff;
+				const maxRadiusForHeight = playableHeight / heightCoeff;
+				const radius = Math.max(1, Math.min(maxRadiusForWidth, maxRadiusForHeight));
+				const originX = width / 2;
+				const originY = topOffset + radius * (1 + paddingRatio); // top of board at topOffset
+				this.setLayout({ originX, originY, radius });
+				this._fitCache = key;
+				this.boardReady = true;
+			}
+			// Update background hexagon radius and position
+			this.backgroundHexagon.x = width / 2;
+			this.backgroundHexagon.y = topOffset + this.radius * (1 + paddingRatio);
+			this.backgroundHexagon.radius = this.radius * (this.gridRadius * 2 + 1) * 1.1;
+			// Draw background hexagon
+			push();
+			this.backgroundHexagon.draw();
+			pop();
+		}
+
+		// Draw board slots and tiles
 		const ctx = p || window;
 		ctx.push();
-		// Draw slots (backgrounds)
 		this.slots.forEach((slot, idx) => {
 			const coords = this.getSlotCoords(idx);
 			slot.setPosition(coords.x, coords.y);
 			slot.draw(ctx);
 		});
-		// Draw tiles (pieces) from model
 		const tiles = this.model.getTiles();
 		tiles.forEach((entry) => {
 			if (entry && entry.present) {
 				const { q, r, dir } = entry;
 				const { x, y } = this.axialToPixel(q, r);
-				// Create a HexTile on the fly for rendering
 				const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
 				tile.draw(ctx);
 			}
