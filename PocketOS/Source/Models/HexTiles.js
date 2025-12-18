@@ -1,24 +1,14 @@
 // HexTiles.js - Game model for Hex Tiles
 
-// Direction angles (flat-top hexes, 0° is up)
-export const DIR_ANGLES = {
-	up: 0,
-	upRight: 60,
-	downRight: 120,
-	down: 180,
-	downLeft: 240,
-	upLeft: 300,
-};
-
-// Face color for the hex based on direction
-export const DIR_COLORS = {
-	up: '#e53935', // red
-	upLeft: '#fb8c00', // orange
-	upRight: '#1e88e5', // blue
-	down: '#fdd835', // yellow
-	downLeft: '#8e24aa', // purple
-	downRight: '#43a047', // green
-};
+// Canonical directions for flat-top hexes
+export const HEX_DIRECTIONS = [
+  { name: 'up',        angle: 0,   color: '#e53935' }, // red
+  { name: 'upRight',   angle: 60,  color: '#1e88e5' }, // blue
+  { name: 'downRight', angle: 120, color: '#43a047' }, // green
+  { name: 'down',      angle: 180, color: '#fdd835' }, // yellow
+  { name: 'downLeft',  angle: 240, color: '#8e24aa' }, // purple
+  { name: 'upLeft',    angle: 300, color: '#fb8c00' }, // orange
+];
 
 // Main game model class
 export default class HexTilesModel {
@@ -31,14 +21,14 @@ export default class HexTilesModel {
 	// Initialize the board with random directions
 	initTiles() {
 		this.tiles = [];
-		const directions = Object.keys(DIR_ANGLES);
+		const directions = HEX_DIRECTIONS;
 		const R = this.gridRadius;
 		for (let q = -R; q <= R; q++) {
 			for (let r = -R; r <= R; r++) {
 				const s = -q - r;
 				if (Math.abs(s) <= R) {
-					const dir = directions[Math.floor(Math.random() * directions.length)];
-					this.tiles.push({ q, r, s, dir, present: true });
+					const dirObj = directions[Math.floor(Math.random() * directions.length)];
+					this.tiles.push({ q, r, s, dir: dirObj.name, present: true });
 				} else {
 					this.tiles.push(null);
 				}

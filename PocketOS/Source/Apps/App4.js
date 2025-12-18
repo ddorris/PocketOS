@@ -2,6 +2,7 @@ import Button from '../Views/Button.js';
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
 import HexTilesGameBoard from '../Views/HexTilesGameBoard.js';
+import Hexagon from '../Views/Hexagon.js';
 import HexTilesModel from '../Models/HexTiles.js';
 
 export default class App4 extends System {
@@ -10,6 +11,7 @@ export default class App4 extends System {
 		this.appDockHeight = 120;
 		this.board = null;
 		this._fitCache = null;
+		this.backgroundHexagon = null;
 	}
 
 	setup() {
@@ -45,25 +47,22 @@ export default class App4 extends System {
 			const G = this.board.gridRadius;
 			const paddingRatio = this.board.paddingRatio;
 
-			// Let's draw one big hexagon behind the board for fun
-			const bgColor = '#333';
-			const bgRadius = 0.9 * this.board.radius * (1 + paddingRatio) * (3 * G + 2) / Math.sqrt(3);
-			const bgX = width / 2;
-			const bgY = marginY + (this.appDockHeight + playableHeight / 2);
-			// draw a upward pointing hex centered behind the board, there is no hexagon function so use polygon
-			strokeWeight(50);
-			strokeJoin(ROUND);
-			stroke(bgColor);
-			fill(bgColor);
-			beginShape();
-			for (let i = 0; i < 6; i++) {
-				// remember this is not the flat top hexagon, so start at 30 degrees
-				const angle = PI / 3 * i + PI / 6;
-				const x = bgX + bgRadius * cos(angle);
-				const y = bgY + bgRadius * sin(angle);
-				vertex(x, y);
+			// Let's draw one big hexagon behind the board for fun, using Hexagon.js
+			if (!this.backgroundHexagon) {
+				// Use rotation 30 for pointy-top, and match fill
+				this.backgroundHexagon = new Hexagon({
+					x: width / 2,
+					y:  marginY + (this.appDockHeight + playableHeight / 2),
+					radius: 1,
+					fill: '#333',
+					cornerRadiusRatio: this.board.cornerRadiusRatio,
+					rotation: 30
+				});
 			}
-			endShape(CLOSE);
+			// Draw the background hexagon
+			push();
+			this.backgroundHexagon.draw();
+			pop();
 
 			// Create a cache key to avoid redundant calculations
 			const key = `${playableWidth}x${playableHeight}|G${G}|k${paddingRatio.toFixed(4)}|rounded:${this.board.useRounded ? 1 : 0}`;
@@ -87,6 +86,7 @@ export default class App4 extends System {
 
 		if (this.board) {
 			this.board.draw();
+			this.backgroundHexagon.radius = this.board.radius * (this.board.gridRadius * 2 + 1) * 1.1;
 		}
 
 		if (this.resetButton) {

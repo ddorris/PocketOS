@@ -1,10 +1,11 @@
 export default class Hexagon {
-	constructor({ x = 0, y = 0, radius = 30, fill = '#4da3ff', cornerRadiusRatio = 0 } = {}) {
+	constructor({ x = 0, y = 0, radius = 30, fill = '#4da3ff', cornerRadiusRatio = 0, rotation = 0 } = {}) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
 		this.fill = fill;
 		this.cornerRadiusRatio = cornerRadiusRatio;
+		this.rotation = rotation; // degrees, default 0 (flat-top)
 	}
 
 	setPosition(x, y) {
@@ -17,11 +18,10 @@ export default class Hexagon {
 	}
 
 	getVertices() {
-		// Canonical flat-top hexagon: top/bottom edges horizontal
-		// Vertices at 0°, 60°, 120°, 180°, 240°, 300°
+		// Vertices at rotation°, rotation+60°, ...
 		const verts = [];
 		for (let i = 0; i < 6; i++) {
-			const angle = (Math.PI / 180) * (0 + 60 * i);
+			const angle = (Math.PI / 180) * (this.rotation + 60 * i);
 			verts.push({
 				x: this.x + this.radius * Math.cos(angle),
 				y: this.y + this.radius * Math.sin(angle),
