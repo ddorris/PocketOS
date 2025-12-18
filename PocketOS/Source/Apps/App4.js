@@ -2,6 +2,7 @@ import Button from '../Views/Button.js';
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
 import HexTilesGameBoard from '../Views/HexTilesGameBoard.js';
+import HexTilesModel from '../Models/HexTiles.js';
 
 export default class App4 extends System {
 	constructor() {
@@ -10,29 +11,31 @@ export default class App4 extends System {
 		this.board = null;
 		this._fitCache = null;
 	}
-	
+
 	setup() {
 		const appInfo = this.engine.state.apps.find(app => app.id === 4);
 		if (appInfo && appInfo.icon) {
 			const icon = loadImage(appInfo.icon);
 			this.appInfo = new AppInfo({ info: appInfo, icon });
 		}
-		
-		this.board = new HexTilesGameBoard();
+
+		this.model = new HexTilesModel();
+		this.board = new HexTilesGameBoard(this.model);
 		this.resetButton = new Button({
 			x: 0, y: 0, width: 60, height: 40,
 			label: 'Reset',
 			bgColor: '#565758',
 			hoverColor: '#6a6a6c',
 			onClick: () => {
-				this.board.setLayout({});
+				this.model.reset();
+				this.board.buildBoard();
 			}
 		});
 	}
-	
+
 	draw() {
 		if (this.enabled === false) return;
-		
+
 		// Fit or refit when inputs change (canvas, grid radius, padding)
 		if (this.board && typeof width !== 'undefined') {
 			const marginX = 40; // padding around the board
@@ -61,7 +64,7 @@ export default class App4 extends System {
 				vertex(x, y);
 			}
 			endShape(CLOSE);
-			
+
 			// Create a cache key to avoid redundant calculations
 			const key = `${playableWidth}x${playableHeight}|G${G}|k${paddingRatio.toFixed(4)}|rounded:${this.board.useRounded ? 1 : 0}`;
 			if (!this._fitCache || this._fitCache !== key) {
@@ -85,7 +88,7 @@ export default class App4 extends System {
 		if (this.board) {
 			this.board.draw();
 		}
-		
+
 		if (this.resetButton) {
 			this.resetButton.x = (width - this.resetButton.width) / 2;
 			this.resetButton.y = height - this.resetButton.height - 160;

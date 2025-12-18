@@ -2,15 +2,15 @@ import HexTile from './HexTile.js';
 import Hexagon from './Hexagon.js';
 
 export default class HexTilesGameBoard {
-	constructor() {
+	constructor(model) {
 		this.originX = 0;
 		this.originY = 0;
 		this.radius = 30;
-		this.paddingRatio = 0.01; // padding as ratio of radius (creates gaps between tiles)
-		this.cornerRadiusRatio = 0.2; // 0 = sharp corners, >0 = rounded corners (fraction of radius)
-		this.gridRadius = 3; // how many rings from center (1 = flower, 2 = flower + ring)
-		this.slots = []; // background empty cells
-		this.tiles = []; // active game pieces
+		this.paddingRatio = 0.01;
+		this.cornerRadiusRatio = 0.2;
+		this.gridRadius = 3;
+		this.slots = [];
+		this.model = model;
 	}
 
 	setLayout({ originX, originY, radius, paddingRatio, gridRadius }) {
@@ -18,7 +18,10 @@ export default class HexTilesGameBoard {
 		if (originY !== undefined) this.originY = originY;
 		if (radius !== undefined) this.radius = radius;
 		if (paddingRatio !== undefined) this.paddingRatio = paddingRatio;
-		if (gridRadius !== undefined) this.gridRadius = gridRadius;
+		if (gridRadius !== undefined && gridRadius !== this.gridRadius) {
+			this.gridRadius = gridRadius;
+			// The model should be replaced by the app, not here
+		}
 		this.buildBoard();
 	}
 
@@ -53,32 +56,11 @@ export default class HexTilesGameBoard {
 		}
 	}
 
-	buildPieces() {
-		// Build a 2D array of tiles indexed by axial (q, r), or null for empty
-		this.tiles = [];
-		const directions = ['up', 'upRight', 'downRight', 'down', 'downLeft', 'upLeft'];
-		const R = this.gridRadius;
-		const cornerRadiusRatio = this.cornerRadiusRatio;
-		for (let q = -R; q <= R; q++) {
-			for (let r = -R; r <= R; r++) {
-				const s = -q - r;
-				if (Math.abs(s) <= R) {
-					const p = this.axialToPixel(q, r);
-					const dir = directions[Math.floor(Math.random() * directions.length)];
-					this.tiles.push({
-						q, r, s,
-						tile: new HexTile({ x: p.x, y: p.y, radius: this.radius, arrowDir: dir, cornerRadiusRatio })
-					});
-				} else {
-					this.tiles.push(null);
-				}
-			}
-		}
-	}
+	// No buildPieces; tile data comes from model
 
 	buildBoard() {
 		this.buildSlots();
-		this.buildPieces();
+		// No buildPieces; handled by model
 	}
 
 	draw(p) {
@@ -90,13 +72,15 @@ export default class HexTilesGameBoard {
 			slot.setPosition(coords.x, coords.y);
 			slot.draw(ctx);
 		});
-		// Draw tiles (pieces) if present
-		this.tiles.forEach((entry) => {
-			if (entry && entry.tile) {
-				// Use the stored q, r for position
-				const { x, y } = this.axialToPixel(entry.q, entry.r);
-				entry.tile.setPosition(x, y);
-				entry.tile.draw(ctx);
+		// Draw tiles (pieces) from model
+		const tiles = this.model.getTiles();
+		tiles.forEach((entry) => {
+			if (entry && entry.present) {
+				const { q, r, dir } = entry;
+				const { x, y } = this.axialToPixel(q, r);
+				// Create a HexTile on the fly for rendering
+				const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
+				tile.draw(ctx);
 			}
 		});
 		ctx.pop();
@@ -134,10 +118,14 @@ export default class HexTilesGameBoard {
 
 	// Returns the tile entry at (mx, my), or null if none
 	getTileAtPixel(mx, my) {
-		for (const entry of this.tiles) {
-			if (entry && entry.tile) {
-				const dx = mx - entry.tile.hex.x;
-				const dy = my - entry.tile.hex.y;
+		// Use model data for hit detection
+		const tiles = this.model.getTiles();
+		for (const entry of tiles) {
+			if (entry && entry.present) {
+				const { q, r } = entry;
+				const { x, y } = this.axialToPixel(q, r);
+				const dx = mx - x;
+				const dy = my - y;
 				if (Math.hypot(dx, dy) <= this.radius * 0.98) return entry;
 			}
 		}
@@ -147,8 +135,8 @@ export default class HexTilesGameBoard {
 	// Mark the tile at (mx, my) as empty if any
 	handleClick(mx, my) {
 		const entry = this.getTileAtPixel(mx, my);
-		if (entry && entry.tile) {
-			entry.tile = null;
+		if (entry && entry.present) {
+			this.model.removeTile(entry.q, entry.r);
 			return true;
 		}
 		return false;
