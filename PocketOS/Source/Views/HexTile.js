@@ -1,6 +1,6 @@
 import Hexagon from './Hexagon.js';
 import HexTileArrow from './HexTileArrow.js';
-import { HEX_DIRECTIONS } from '../Models/HexTiles.js';
+import { HEX_DIRECTIONS } from '../Models/HexTilesModel.js';
 
 export default class HexTile {
 	constructor({ x = 0, y = 0, radius = 30, fill = '#4da3ff', arrowDir = 'up', cornerRadiusRatio = 0 } = {}) {

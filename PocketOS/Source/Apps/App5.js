@@ -1,6 +1,6 @@
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
-import GuessWords from '../Models/GuessWords.js';
+import GuessWordsModel from '../Models/GuessWordsModel.js';
 import Keyboard from '../Views/Keyboard.js';
 import GuessWordsHeader from '../Views/GuessWordsHeader.js';
 import GuessWordsGameBoard from '../Views/GuessWordsGameBoard.js';
@@ -49,7 +49,7 @@ export default class App5 extends System {
 		const wordListUrls = appInfo?.bundle?.wordLists || {};
 
 		// Initialize model with URLs from manifest
-		this.model = new GuessWords(wordListUrls);
+		this.model = new GuessWordsModel(wordListUrls);
 		try {
 			await this.model.init();
 		} catch (e) {

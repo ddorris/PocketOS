@@ -1,12 +1,12 @@
 import Button from './Button.js';
-import Sudoku from '../Models/Sudoku.js';
+import SudokuModel from '../Models/SudokuModel.js';
 import SudokuBoard from './SudokuBoard.js';
 import SudokuKeyboard from './SudokuKeyboard.js';
 
 // p5-based Sudoku view: mirrors WebSudoku behavior using canvas
 export default class SudokuGame {
 	constructor({ isEnabled } = {}) {
-		this.model = new Sudoku();
+		this.model = new SudokuModel();
 		this.board = new SudokuBoard({});
 		this.keyboard = new SudokuKeyboard({ onKeyPress: (k) => this.handleKey(k) });
 

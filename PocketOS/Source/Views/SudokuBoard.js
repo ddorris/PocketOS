@@ -1,9 +1,9 @@
-import Sudoku from '../Models/Sudoku.js';
+import SudokuModel from '../Models/SudokuModel.js';
 
 export default class SudokuBoard {
 	constructor({ colors } = {}) {
 		this.colors = colors || { EMPTY_CELL: 'white', CLUE_CELL: '#ccc', VALID: '#1c1', ERROR: '#e22', DEFAULT: '#eee' };
-		this.model = new Sudoku();
+		this.model = new SudokuModel();
 		this.matrix = this.model.createEmptyBoard();
 		this.cluesMask = Array.from({ length: 9 }, () => Array(9).fill(false));
 		this.focus = { r: -1, c: -1 };

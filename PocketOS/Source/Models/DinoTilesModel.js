@@ -1,5 +1,5 @@
 // DinoTiles - Game model for stacked tile matching
-export default class DinoTiles {
+export default class DinoTilesModel {
 	constructor() {
 		this.tiles = [];
 	}

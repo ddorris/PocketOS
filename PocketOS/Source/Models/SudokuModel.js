@@ -1,5 +1,5 @@
 // Encapsulated Sudoku domain model: board generation, solving, validation
-export default class Sudoku {
+export default class SudokuModel {
 	constructor() { }
 
 	createEmptyBoard() {

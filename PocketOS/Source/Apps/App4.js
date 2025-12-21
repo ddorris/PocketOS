@@ -2,7 +2,7 @@ import Button from '../Views/Button.js';
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
 import HexTilesGameBoard from '../Views/HexTilesGameBoard.js';
-import HexTilesModel from '../Models/HexTiles.js';
+import HexTilesModel from '../Models/HexTilesModel.js';
 
 export default class App4 extends System {
 	constructor() {

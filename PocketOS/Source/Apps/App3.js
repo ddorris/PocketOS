@@ -4,12 +4,12 @@ import DinoDock from '../Views/DinoDock.js';
 import DinoBoard from '../Views/DinoBoard.js';
 import Button from '../Views/Button.js';
 import SpriteSheetSystem from '../Systems/SpriteSheetSystem.js';
-import DinoTiles from '../Models/DinoTiles.js';
+import DinoTilesModel from '../Models/DinoTilesModel.js';
 
 export default class App3 extends System {
 	constructor() {
 		super();
-		this.model = new DinoTiles();
+		this.model = new DinoTilesModel();
 		this.dinoBoard = null;
 		this.dinoDock = new DinoDock();
 		this.resetButton = null;

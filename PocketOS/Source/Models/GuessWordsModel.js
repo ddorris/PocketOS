@@ -1,4 +1,4 @@
-export default class GuessWords {
+export default class GuessWordsModel {
 	constructor(wordListUrls = {}) {
 		this.answers = [];
 		this.validWords = new Set();
