@@ -24,7 +24,7 @@ export default class App3 extends System {
 			this.resetButton.setBounds(x, y, btnWidth, btnHeight);
 		};
 	}
-	
+
 	async setup() {
 		const appInfo = this.engine.state.apps.find(app => app.id === 3);
 		if (appInfo && appInfo.icon) {
@@ -106,9 +106,9 @@ export default class App3 extends System {
 		const candidate = this.dinoBoard?.findTopmostTileAtPixel(mouseX, mouseY);
 		if (candidate && this.model.isSelectable(candidate)) {
 			// Add to dock
-			const dockTile = { 
-				sheetKey: 'dinotiles', 
-				tileIndex: candidate.tileIndex 
+			const dockTile = {
+				sheetKey: 'dinotiles',
+				tileIndex: candidate.tileIndex
 			};
 			if (this.dinoDock.addTile(dockTile)) {
 				this.model.selectTile(candidate);

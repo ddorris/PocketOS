@@ -8,7 +8,8 @@ export default class App4 extends System {
 	constructor() {
 		super();
 		this.appDockHeight = 120;
-		this.board = null;
+		this.model = new HexTilesModel();
+		this.board = new HexTilesGameBoard(this.model);
 	}
 
 	setup() {
@@ -18,8 +19,7 @@ export default class App4 extends System {
 			this.appInfo = new AppInfo({ info: appInfo, icon });
 		}
 
-		this.model = new HexTilesModel();
-		this.board = new HexTilesGameBoard(this.model);
+		// Model and board are now constructed in the constructor
 		this.resetButton = new Button({
 			x: 0, y: 0, width: 60, height: 40,
 			label: 'Reset',

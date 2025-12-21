@@ -19,7 +19,7 @@ const COLORS = {
 export default class App5 extends System {
 	constructor() {
 		super();
-		this.model = null;
+		this.model = new GuessWordsModel();
 		this.keyboard = null;
 		this.keyListener = null;
 		this.appInfo = null;
@@ -44,12 +44,8 @@ export default class App5 extends System {
 			const icon = loadImage(appInfo.icon);
 			this.appInfo = new AppInfo({ info: appInfo, icon });
 		}
-
 		// Get word list URLs from bundle
-		const wordListUrls = appInfo?.bundle?.wordLists || {};
-
-		// Initialize model with URLs from manifest
-		this.model = new GuessWordsModel(wordListUrls);
+		this.model.wordListUrls = appInfo?.bundle?.wordLists || {};
 		try {
 			await this.model.init();
 		} catch (e) {
@@ -57,14 +53,9 @@ export default class App5 extends System {
 			return;
 		}
 
-		// Initialize keyboard
-		this.keyboard = new Keyboard({
-			onKeyPress: (key) => this.handleInput(key)
-		});
-
-		// Setup keyboard event listener
+		// Initialize keyboard and start game
+		this.keyboard = new Keyboard({onKeyPress: (key) => this.handleInput(key)});
 		this.setupKeyListener();
-
 		this.startGame();
 	}
 

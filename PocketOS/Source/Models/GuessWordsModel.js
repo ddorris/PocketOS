@@ -1,5 +1,5 @@
 export default class GuessWordsModel {
-	constructor(wordListUrls = {}) {
+	constructor() {
 		this.answers = [];
 		this.validWords = new Set();
 		this.targetWord = '';
@@ -9,10 +9,7 @@ export default class GuessWordsModel {
 		this.results = [];
 		this.gameStatus = 'playing'; // playing, won, lost
 		this.attemptedGuesses = new Set(); // Track guesses to prevent duplicates
-		this.wordListUrls = {
-			allowed: wordListUrls.allowed || 'assets/wordle-allowed-guesses.txt',
-			answers: wordListUrls.answers || 'assets/wordle-answers-alphabetical.txt'
-		};
+		this.wordListUrls = {answers: '', allowed: ''};
 	}
 
 	async init() {
@@ -35,7 +32,7 @@ export default class GuessWordsModel {
 				const allowed = allowedText.split(/\r?\n/)
 					.map(w => w.trim().toUpperCase())
 					.filter(w => w.length === 5);
-				
+
 				this.validWords = new Set([...this.answers, ...allowed]);
 			} catch (e) {
 				console.error("Failed to load words", e);
@@ -111,13 +108,13 @@ export default class GuessWordsModel {
 			}
 		}
 
-		return { 
-			status: 'success', 
-			result, 
-			guess, 
+		return {
+			status: 'success',
+			result,
+			guess,
 			rowIndex: currentRowIndex,
 			gameStatus: this.gameStatus,
-			targetWord: this.targetWord 
+			targetWord: this.targetWord
 		};
 	}
 

@@ -1,11 +1,13 @@
 import System from '../Systems/System.js';
 import AppInfo from '../Views/AppInfo.js';
+import SolitaireModel from '../Models/SolitaireModel.js';
 
 export default class App1 extends System {
 	constructor() {
 		super();
+		this.model = new SolitaireModel();
 	}
-	
+
 	setup() {
 		const appInfo = this.engine.state.apps.find(app => app.id === 1);
 		if (appInfo && appInfo.icon) {
