@@ -1,5 +1,5 @@
-import Button from './Button.js';
-import SudokuModel from '../Models/SudokuModel.js';
+import Button from '../Button.js';
+import SudokuModel from '../../Models/SudokuModel.js';
 import SudokuBoard from './SudokuBoard.js';
 import SudokuKeyboard from './SudokuKeyboard.js';
 
@@ -11,14 +11,14 @@ export default class SudokuGame {
 		this.keyboard = new SudokuKeyboard({ onKeyPress: (k) => this.handleKey(k) });
 
 		this.appDockHeight = 120;
-		this.headerHeight = 60;
+		this.headerHeight = 50;
 		this.keyboardHeight = 70;
 		this.wrapperPadding = 20;
 		this.headerGap = 10;
 		this.contentMaxWidth = 550; // match WebSudoku max width
 		this.viewportPadding = 12; // adjustable outer margin around the game
-		this.controlFontSize = 16;
-		this.diffFixedWidth = 100; // fixed width to prevent layout shift
+		this.controlFontSize = 14;
+		this.diffFixedWidth = 80; // fixed width to prevent layout shift
 
 		this.difficulties = [
 			{ key: 'Solved', clues: 81, rating: 0 },
@@ -39,16 +39,9 @@ export default class SudokuGame {
 		const bStrokeColor = '#818384';
 		const bCornerRadius = 4;
 
-		this.newButton = new Button({ id: 'new', label: 'New', x: 0, y: 0, width: 90, height: 40, bgColor: bBgColor, hoverColor: bHoverColor, textColor: bTextColor, strokeColor: bStrokeColor, cornerRadius: bCornerRadius, fontSize: 16, onClick: () => this.newGame() });
-		this.solveButton = new Button({ id: 'solve', label: 'Solve', x: 0, y: 0, width: 90, height: 40, bgColor: bBgColor, hoverColor: bHoverColor, textColor: bTextColor, strokeColor: bStrokeColor, cornerRadius: bCornerRadius, fontSize: 16, onClick: () => this.solveGame() });
-		this.diffButton = new Button({ id: 'difficulty', label: this.difficulties[this.diffIndex].key, x: 0, y: 0, width: 100, height: 40, bgColor: bBgColor, hoverColor: bHoverColor, textColor: bTextColor, strokeColor: bStrokeColor, cornerRadius: bCornerRadius, fontSize: 16, onClick: () => this.cycleDifficulty() });
-		// Ensure local Varela Round font is available to canvas text
-		if (!document.getElementById('app2-font-local')) {
-			const style = document.createElement('style');
-			style.id = 'app2-font-local';
-			style.textContent = `@font-face { font-family: 'Varela Round'; src: url('./PocketOS/Assets/Fonts/VarelaRound-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }`;
-			document.head.appendChild(style);
-		}
+		this.newButton = new Button({ id: 'new', label: 'New', x: 0, y: 0, width: 90, height: 35, bgColor: bBgColor, hoverColor: bHoverColor, textColor: bTextColor, strokeColor: bStrokeColor, cornerRadius: bCornerRadius, fontSize: 16, onClick: () => this.newGame() });
+		this.solveButton = new Button({ id: 'solve', label: 'Solve', x: 0, y: 0, width: 90, height: 35, bgColor: bBgColor, hoverColor: bHoverColor, textColor: bTextColor, strokeColor: bStrokeColor, cornerRadius: bCornerRadius, fontSize: 16, onClick: () => this.solveGame() });
+		this.diffButton = new Button({ id: 'difficulty', label: this.difficulties[this.diffIndex].key, x: 0, y: 0, width: 80, height: 35, bgColor: bBgColor, hoverColor: bHoverColor, textColor: bTextColor, strokeColor: bStrokeColor, cornerRadius: bCornerRadius, fontSize: 16, onClick: () => this.cycleDifficulty() });
 
 		this.newGame();
 
@@ -95,9 +88,6 @@ export default class SudokuGame {
 		fill(20);
 		rect(0, this.appDockHeight, width, height - this.appDockHeight);
 
-		// Set global font for canvas draws to match WebSudoku
-		textFont('Varela Round');
-
 		this.calculateLayout();
 
 		// Wrapper around board + controls, with validation border
@@ -125,8 +115,6 @@ export default class SudokuGame {
 		noStroke();
 		fill(151);
 		textAlign(LEFT, CENTER);
-		textFont('Varela Round');
-		textStyle(BOLD);
 		const label = 'DIFFICULTY:';
 		let fs = this.controlFontSize;
 		let spacing = 10; // gap between elements
@@ -186,7 +174,7 @@ export default class SudokuGame {
 		const cy = y + (this.headerHeight - this.diffButton.height) / 2;
 
 		// Left: fixed-width difficulty button after label
-		const diffX = x + dims.labelWidth + spacing;
+		const diffX = x + dims.labelWidth + spacing - 10;
 		this.diffButton.setBounds(diffX, cy, dims.diffW, this.diffButton.height);
 		this.diffButton.draw();
 

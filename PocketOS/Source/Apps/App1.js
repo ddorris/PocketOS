@@ -1,4 +1,4 @@
-import System from '../Systems/System.js';
+import System from '../Core/System.js';
 import AppInfo from '../Views/AppInfo.js';
 import SolitaireModel from '../Models/SolitaireModel.js';
 

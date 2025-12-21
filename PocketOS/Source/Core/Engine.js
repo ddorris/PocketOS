@@ -1,4 +1,4 @@
-import System from '../Systems/System.js';
+import System from './System.js';
 
 export default class Engine extends System {
 	state = {};

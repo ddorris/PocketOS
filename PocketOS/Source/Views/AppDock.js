@@ -1,5 +1,5 @@
 // Manages a row of AppIconButton instances for the home screen
-import System from '../Systems/System.js';
+import System from '../Core/System.js';
 import AppIconButton from './AppIconButton.js';
 
 export default class AppDock extends System {

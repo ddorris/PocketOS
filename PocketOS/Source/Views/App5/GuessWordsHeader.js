@@ -1,5 +1,5 @@
 import GuessWordsTile from './GuessWordsTile.js';
-import Button from './Button.js';
+import Button from '../Button.js';
 
 export default class GuessWordsHeader {
 	constructor({ maxWidth, colors, onToggleCheat, onReset }) {

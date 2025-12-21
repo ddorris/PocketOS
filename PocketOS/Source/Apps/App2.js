@@ -1,6 +1,6 @@
-import System from '../Systems/System.js';
+import System from '../Core/System.js';
 import AppInfo from '../Views/AppInfo.js';
-import SudokuGame from '../Views/SudokuGame.js';
+import SudokuGame from '../Views/App2/SudokuGame.js';
 import SudokuModel from '../Models/SudokuModel.js';
 
 // App2 entry point: runs the p5-based SudokuGame inside PocketOS

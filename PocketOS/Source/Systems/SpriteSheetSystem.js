@@ -1,4 +1,4 @@
-import System from './System.js';
+import System from '../Core/System.js';
 
 export default class SpriteSheetSystem extends System {
 	constructor() {

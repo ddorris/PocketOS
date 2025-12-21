@@ -1,7 +1,7 @@
 import Button from '../Views/Button.js';
-import System from '../Systems/System.js';
+import System from '../Core/System.js';
 import AppInfo from '../Views/AppInfo.js';
-import HexTilesGameBoard from '../Views/HexTilesGameBoard.js';
+import HexTilesGameBoard from '../Views/App4/HexTilesGameBoard.js';
 import HexTilesModel from '../Models/HexTilesModel.js';
 
 export default class App4 extends System {

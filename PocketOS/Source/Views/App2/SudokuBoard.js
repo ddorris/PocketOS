@@ -1,4 +1,4 @@
-import SudokuModel from '../Models/SudokuModel.js';
+import SudokuModel from '../../Models/SudokuModel.js';
 
 export default class SudokuBoard {
 	constructor({ colors } = {}) {
@@ -110,7 +110,6 @@ export default class SudokuBoard {
 		// grid cells
 		push();
 		textAlign(CENTER, CENTER);
-		textFont('Varela Round');
 		textSize(size * 0.55);
 		for (let r = 0; r < 9; r++) {
 			for (let c = 0; c < 9; c++) {
@@ -126,6 +125,7 @@ export default class SudokuBoard {
 				const v = this.matrix[r][c];
 				if (v) {
 					noStroke();
+					textFont('Varela Round');
 					textStyle(BOLD);
 					if (isClue) fill('#666'); else fill('#0066cc');
 					text(v, px + size / 2, py + size / 2 + 1);

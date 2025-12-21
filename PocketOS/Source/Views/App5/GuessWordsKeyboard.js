@@ -1,4 +1,4 @@
-export default class Keyboard {
+export default class GuessWordsKeyboard {
 	constructor(config) {
 		this.onKeyPress = config.onKeyPress || (() => { });
 		this.keys = [

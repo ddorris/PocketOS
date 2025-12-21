@@ -1,9 +1,9 @@
-import System from '../Systems/System.js';
+import System from '../Core/System.js';
 import AppInfo from '../Views/AppInfo.js';
 import GuessWordsModel from '../Models/GuessWordsModel.js';
-import Keyboard from '../Views/Keyboard.js';
-import GuessWordsHeader from '../Views/GuessWordsHeader.js';
-import GuessWordsGameBoard from '../Views/GuessWordsGameBoard.js';
+import GuessWordsKeyboard from '../Views/App5/GuessWordsKeyboard.js';
+import GuessWordsHeader from '../Views/App5/GuessWordsHeader.js';
+import GuessWordsGameBoard from '../Views/App5/GuessWordsGameBoard.js';
 
 const COLORS = {
 	correct: '#538d4e',
@@ -54,7 +54,7 @@ export default class App5 extends System {
 		}
 
 		// Initialize keyboard and start game
-		this.keyboard = new Keyboard({onKeyPress: (key) => this.handleInput(key)});
+		this.keyboard = new GuessWordsKeyboard({onKeyPress: (key) => this.handleInput(key)});
 		this.setupKeyListener();
 		this.startGame();
 	}
