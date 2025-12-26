@@ -5,14 +5,16 @@ import HexTilesGameBoard from '../Views/App4/HexTilesGameBoard.js';
 import HexTilesModel from '../Models/HexTilesModel.js';
 
 export default class App4 extends System {
-	constructor() {
-		super();
-		this.appDockHeight = 120;
-		this.model = new HexTilesModel();
-		this.board = new HexTilesGameBoard(this.model);
-	}
+       constructor() {
+	       super();
+	       this.appDockHeight = 120;
+	       this.model = new HexTilesModel();
+	       this.isDebug = true; // Set to true for debug overlay
+	       this.board = new HexTilesGameBoard(this.model, this.isDebug);
+       }
 
-	setup() {
+	       setup() {
+		       this.board.isDebug = this.isDebug;
 		const appInfo = this.engine.state.apps.find(app => app.id === 4);
 		if (appInfo && appInfo.icon) {
 			const icon = loadImage(appInfo.icon);

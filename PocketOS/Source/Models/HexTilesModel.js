@@ -56,4 +56,43 @@ export default class HexTilesModel {
 	reset() {
 		this.initTiles();
 	}
+
+	// Get tile at (q, r)
+	getTile(q, r) {
+		for (const entry of this.tiles) {
+			if (entry && entry.q === q && entry.r === r) {
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	// Get the tile that a given tile points to
+	getPointedTile(tile) {
+		if (!tile || !tile.present) return null;
+		const dirObj = HEX_DIRECTIONS.find(d => d.name === tile.dir);
+		if (!dirObj) return null;
+		const dirVectors = {
+			'up':        { dq: 0,  dr: -1 },
+			'upRight':   { dq: 1,  dr: -1 },
+			'downRight': { dq: 1,  dr: 0  },
+			'down':      { dq: 0,  dr: 1  },
+			'downLeft':  { dq: -1, dr: 1  },
+			'upLeft':    { dq: -1, dr: 0  },
+		};
+		const vec = dirVectors[tile.dir];
+		let currentQ = tile.q + vec.dq;
+		let currentR = tile.r + vec.dr;
+		const visited = new Set();
+		while (true) {
+			const key = `${currentQ},${currentR}`;
+			if (visited.has(key)) return null; // loop detected
+			visited.add(key);
+			const nextTile = this.getTile(currentQ, currentR);
+			if (!nextTile) return null;
+			if (nextTile.present) return nextTile;
+			currentQ += vec.dq;
+			currentR += vec.dr;
+		}
+	}
 }

@@ -12,7 +12,8 @@ export default class HexTileArrow {
 	// Draw an arrow composed of 3 lines, oriented by angleDeg around (x, y)
 	// Geometry is defined for an "up" arrow then rotated.
 	draw({ x, y, radius, angleDeg = 270 }) {
-		const angle = (Math.PI / 180) * angleDeg;
+		const startAngle = -180; // "up" direction
+		const angle = (Math.PI / 180) * (angleDeg + startAngle);
 
 		// Centered arrow geometry: spans from tail to tip with better balance
 		const tipY = radius * 0.3;      // tip extends toward edge

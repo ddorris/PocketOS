@@ -1,8 +1,9 @@
 import HexTile from './HexTile.js';
 import Hexagon from './Hexagon.js';
+import { HEX_DIRECTIONS } from '../../Models/HexTilesModel.js';
 
 export default class HexTilesGameBoard {
-	constructor(model) {
+	constructor(model, isDebug = false) {
 		this.originX = 0;
 		this.originY = 0;
 		this.radius = 30;
@@ -14,6 +15,7 @@ export default class HexTilesGameBoard {
 		this._fitCache = null;
 		this.backgroundHexagon = null;
 		this.appDockHeight = 120; // for layout, matches App4
+		this.isDebug = isDebug;
 	}
 
 	setLayout({ originX, originY, radius, paddingRatio, gridRadius }) {
@@ -109,23 +111,46 @@ export default class HexTilesGameBoard {
 			pop();
 		}
 
-		   // Draw board slots and tiles
-		   push();
-		   this.slots.forEach((slot, idx) => {
-			   const coords = this.getSlotCoords(idx);
-			   slot.setPosition(coords.x, coords.y);
-			   slot.draw();
-		   });
-		   const tiles = this.model.getTiles();
-		   tiles.forEach((entry) => {
-			   if (entry && entry.present) {
-				   const { q, r, dir } = entry;
-				   const { x, y } = this.axialToPixel(q, r);
-				   const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
-				   tile.draw();
-			   }
-		   });
-		   pop();
+		// Draw board slots and tiles
+		push();
+		this.slots.forEach((slot, idx) => {
+			const coords = this.getSlotCoords(idx);
+			slot.setPosition(coords.x, coords.y);
+			slot.draw();
+		});
+		const tiles = this.model.getTiles();
+		tiles.forEach((entry, idx) => {
+			if (entry && entry.present) {
+				const { q, r, s, dir } = entry;
+				const { x, y } = this.axialToPixel(q, r);
+				// the target is the tile that this tile is pointing to
+				const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
+				tile.draw();
+				if (this.isDebug) {
+					push();
+					textAlign(CENTER, CENTER);
+					textSize(Math.max(10, this.radius * 0.3));
+					noStroke();
+					fill(255, 255, 255, 150);
+					const debugString = `${q},${r}`;
+					text(debugString, x, y - 15);
+					let targetTile = this.model.getTile(q, r);
+					if (targetTile) {
+						const dirObj = HEX_DIRECTIONS.find(d => d.name === targetTile.dir);
+						if (dirObj) {
+							const pointedTile = this.model.getPointedTile(targetTile);
+							noStroke();
+							textSize(Math.max(10, this.radius * 0.3));
+							fill(255, 255, 0, 150);
+							const targetString = (pointedTile) ? `${pointedTile.q},${pointedTile.r}` : 'null';
+							text(targetString, x, y + 17);
+						}
+					}
+					pop();
+				}
+			}
+		});
+		pop();
 	}
 
 	getSlotCoords(idx) {
@@ -178,6 +203,11 @@ export default class HexTilesGameBoard {
 	handleClick(mx, my) {
 		const entry = this.getTileAtPixel(mx, my);
 		if (entry && entry.present) {
+			const targetTile = this.model.getPointedTile(entry);
+			if (targetTile && targetTile.present) {
+				// Cannot remove if pointing to another present tile
+				return false;
+			}
 			this.model.removeTile(entry.q, entry.r);
 			return true;
 		}
