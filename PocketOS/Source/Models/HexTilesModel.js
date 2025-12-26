@@ -2,12 +2,12 @@
 
 // Canonical directions for flat-top hexes
 export const HEX_DIRECTIONS = [
-  { name: 'up',        angle: 0,   color: '#e53935' }, // red
-  { name: 'upRight',   angle: 60,  color: '#1e88e5' }, // blue
-  { name: 'downRight', angle: 120, color: '#43a047' }, // green
-  { name: 'down',      angle: 180, color: '#fdd835' }, // yellow
-  { name: 'downLeft',  angle: 240, color: '#8e24aa' }, // purple
-  { name: 'upLeft',    angle: 300, color: '#fb8c00' }, // orange
+	{ name: 'up', angle: 0, color: '#e53935' }, // red
+	{ name: 'upRight', angle: 60, color: '#1e88e5' }, // blue
+	{ name: 'downRight', angle: 120, color: '#43a047' }, // green
+	{ name: 'down', angle: 180, color: '#fdd835' }, // yellow
+	{ name: 'downLeft', angle: 240, color: '#8e24aa' }, // purple
+	{ name: 'upLeft', angle: 300, color: '#fb8c00' }, // orange
 ];
 
 // Main game model class
@@ -18,22 +18,113 @@ export default class HexTilesModel {
 		this.initTiles();
 	}
 
-	// Initialize the board with random directions
-	initTiles() {
-		this.tiles = [];
-		const directions = HEX_DIRECTIONS;
+	// Helper: create array of all valid tile positions
+	createEmptyBoard() {
 		const R = this.gridRadius;
+		const positions = [];
 		for (let q = -R; q <= R; q++) {
 			for (let r = -R; r <= R; r++) {
 				const s = -q - r;
 				if (Math.abs(s) <= R) {
-					const dirObj = directions[Math.floor(Math.random() * directions.length)];
-					this.tiles.push({ q, r, s, dir: dirObj.name, present: true });
-				} else {
-					this.tiles.push(null);
+					positions.push({ q, r, s });
 				}
 			}
 		}
+		return positions;
+	}
+
+	// Helper: Fisher-Yates shuffle
+	shuffle(arr) {
+		for (let i = arr.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[arr[i], arr[j]] = [arr[j], arr[i]];
+		}
+		return arr;
+	}
+
+
+
+	// Helper: check if the current board is winnable (greedy removal)
+	isBoardWinnable(tiles) {
+		// Copy present state
+		const present = new Set();
+		for (const t of tiles) if (t && t.present) present.add(`${t.q},${t.r}`);
+		const N = present.size;
+		let removed = 0;
+		// Shallow copy of tiles
+		const board = tiles.map(t => t ? { ...t } : null);
+		while (removed < N) {
+			let found = false;
+			for (const tile of board) {
+				if (!tile || !tile.present) continue;
+				// Can remove if the tile it points to is absent or off board
+				const pointed = this.getPointedTileForBoard(tile, board);
+				if (!pointed || !pointed.present) {
+					tile.present = false;
+					found = true;
+					removed++;
+				}
+			}
+			if (!found) return false;
+		}
+		return true;
+	}
+
+	// Helper: getPointedTile for a custom board
+	getPointedTileForBoard(tile, board) {
+		if (!tile || !tile.present) return null;
+		const dirObj = HEX_DIRECTIONS.find(d => d.name === tile.dir);
+		if (!dirObj) return null;
+		const dirVectors = {
+			'up': { dq: 0, dr: -1 },
+			'upRight': { dq: 1, dr: -1 },
+			'downRight': { dq: 1, dr: 0 },
+			'down': { dq: 0, dr: 1 },
+			'downLeft': { dq: -1, dr: 1 },
+			'upLeft': { dq: -1, dr: 0 },
+		};
+		const vec = dirVectors[tile.dir];
+		let currentQ = tile.q + vec.dq;
+		let currentR = tile.r + vec.dr;
+		const visited = new Set();
+		while (true) {
+			const key = `${currentQ},${currentR}`;
+			if (visited.has(key)) return null; // loop detected
+			visited.add(key);
+			const nextTile = board.find(t => t && t.q === currentQ && t.r === currentR);
+			if (!nextTile) return null;
+			if (nextTile.present) return nextTile;
+			currentQ += vec.dq;
+			currentR += vec.dr;
+		}
+	}
+
+	// Main generator: start with all tiles in one direction, then incrementally swap directions for diversity
+	initTiles() {
+		const positions = this.createEmptyBoard();
+		const directions = HEX_DIRECTIONS;
+		// 1. Start with all tiles pointing in a random direction (not always 'upLeft')
+		const startDir = directions[Math.floor(Math.random() * directions.length)].name;
+		let tiles = positions.map(pos => ({ ...pos, dir: startDir, present: true }));
+
+		// 2. For each tile, try all other directions in random order, many times, for maximum diversity
+		for (let cycle = 0; cycle < 10; cycle++) {
+			const indices = this.shuffle([...Array(tiles.length).keys()]);
+			for (const idx of indices) {
+				const tile = tiles[idx];
+				if (!tile) continue;
+				// Try all other directions in random order
+				const dirOrder = this.shuffle(directions.map(d => d.name).filter(name => name !== tile.dir));
+				for (const dirName of dirOrder) {
+					const oldDir = tile.dir;
+					tile.dir = dirName;
+					if (!this.isBoardWinnable(tiles)) {
+						tile.dir = oldDir; // revert if not winnable
+					}
+				}
+			}
+		}
+		this.tiles = tiles;
 	}
 
 	// Get all tile objects (with q, r, s, dir, present)
@@ -73,12 +164,12 @@ export default class HexTilesModel {
 		const dirObj = HEX_DIRECTIONS.find(d => d.name === tile.dir);
 		if (!dirObj) return null;
 		const dirVectors = {
-			'up':        { dq: 0,  dr: -1 },
-			'upRight':   { dq: 1,  dr: -1 },
-			'downRight': { dq: 1,  dr: 0  },
-			'down':      { dq: 0,  dr: 1  },
-			'downLeft':  { dq: -1, dr: 1  },
-			'upLeft':    { dq: -1, dr: 0  },
+			'up': { dq: 0, dr: -1 },
+			'upRight': { dq: 1, dr: -1 },
+			'downRight': { dq: 1, dr: 0 },
+			'down': { dq: 0, dr: 1 },
+			'downLeft': { dq: -1, dr: 1 },
+			'upLeft': { dq: -1, dr: 0 },
 		};
 		const vec = dirVectors[tile.dir];
 		let currentQ = tile.q + vec.dq;
