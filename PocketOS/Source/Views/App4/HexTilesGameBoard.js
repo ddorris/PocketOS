@@ -78,8 +78,8 @@ export default class HexTilesGameBoard {
 	draw() {
 		// Layout and background logic from App4
 		if (typeof width !== 'undefined') {
-			const marginX = 40;
-			const maxBoardWidth = 480;
+			const marginX = 25;
+			const maxBoardWidth = 500;
 			const topOffset = 360; // px from top of page to top of board
 			const bottomOffset = 100; // px from bottom of board to bottom of page (for reset button)
 			const playableWidth = Math.min(width - marginX * 2, maxBoardWidth);
@@ -118,7 +118,7 @@ export default class HexTilesGameBoard {
 			// Update background hexagon radius and position
 			this.backgroundHexagon.x = width / 2;
 			this.backgroundHexagon.y = topOffset + this.radius * (1 + paddingRatio);
-			this.backgroundHexagon.radius = this.radius * (this.model.gridRadius * 2 + 1) * 1.1;
+			this.backgroundHexagon.radius = this.radius * (this.model.gridRadius * 2 + 1) * 1.06;
 			// Draw background hexagon
 			push();
 			this.backgroundHexagon.draw();
