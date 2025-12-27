@@ -9,7 +9,7 @@ export default class App4 extends System {
 	       super();
 	       this.appDockHeight = 120;
 	       this.model = new HexTilesModel();
-	       this.isDebug = false; // Set to true for debug overlay
+	       this.isDebug = true; // Set to true for debug overlay
 	       this.board = new HexTilesGameBoard(this.model, this.isDebug);
        }
 

@@ -42,8 +42,6 @@ export default class HexTilesModel {
 		return arr;
 	}
 
-
-
 	// Helper: check if the current board is winnable (greedy removal)
 	isBoardWinnable(tiles) {
 		// Copy present state
@@ -99,32 +97,46 @@ export default class HexTilesModel {
 		}
 	}
 
-	// Main generator: start with all tiles in one direction, then incrementally swap directions for diversity
+	// Main generator: parameterized diversity and swap exhaustion
 	initTiles() {
 		const positions = this.createEmptyBoard();
 		const directions = HEX_DIRECTIONS;
-		// 1. Start with all tiles pointing in a random direction (not always 'upLeft')
+
+		// Diversity level: higher means more cycles and swap attempts
+		const diversityLevel = 4; // More cycles for higher diversity
+		const swapExhaustionLimit = 60 * positions.length; // More failed swaps allowed
+
+		// 1. Start with all tiles pointing in a single random direction (guaranteed winnable)
 		const startDir = directions[Math.floor(Math.random() * directions.length)].name;
 		let tiles = positions.map(pos => ({ ...pos, dir: startDir, present: true }));
 
 		// 2. For each tile, try all other directions in random order, many times, for maximum diversity
-		for (let cycle = 0; cycle < 10; cycle++) {
+		for (let cycle = 0; cycle < diversityLevel; cycle++) {
 			const indices = this.shuffle([...Array(tiles.length).keys()]);
 			for (const idx of indices) {
 				const tile = tiles[idx];
 				if (!tile) continue;
 				// Try all other directions in random order
 				const dirOrder = this.shuffle(directions.map(d => d.name).filter(name => name !== tile.dir));
+				let failedSwaps = 0;
 				for (const dirName of dirOrder) {
+					if (failedSwaps >= swapExhaustionLimit) break;
 					const oldDir = tile.dir;
 					tile.dir = dirName;
 					if (!this.isBoardWinnable(tiles)) {
-						tile.dir = oldDir; // revert if not winnable
+						tile.dir = oldDir;
+						failedSwaps++;
 					}
 				}
 			}
 		}
-		this.tiles = tiles;
+		// Final check: only accept the puzzle if the final state is winnable
+		if (this.isBoardWinnable(tiles)) {
+			this.tiles = tiles;
+		} else {
+			// Fallback: all tiles in startDir (guaranteed winnable)
+			this.tiles = positions.map(pos => ({ ...pos, dir: startDir, present: true }));
+		}
 	}
 
 	// Get all tile objects (with q, r, s, dir, present)
