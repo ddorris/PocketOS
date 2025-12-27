@@ -9,24 +9,22 @@ export default class HexTilesGameBoard {
 		this.radius = 30;
 		this.paddingRatio = 0.01;
 		this.cornerRadiusRatio = 0.2;
-		this.gridRadius = 3;
 		this.slots = [];
 		this.model = model;
 		this._fitCache = null;
 		this.backgroundHexagon = null;
 		this.appDockHeight = 120; // for layout, matches App4
 		this.isDebug = isDebug;
+
+		// Build slots for the model's gridRadius
+		this.setLayout({});
 	}
 
-	setLayout({ originX, originY, radius, paddingRatio, gridRadius }) {
+	setLayout({ originX, originY, radius, paddingRatio }) {
 		if (originX !== undefined) this.originX = originX;
 		if (originY !== undefined) this.originY = originY;
 		if (radius !== undefined) this.radius = radius;
 		if (paddingRatio !== undefined) this.paddingRatio = paddingRatio;
-		if (gridRadius !== undefined && gridRadius !== this.gridRadius) {
-			this.gridRadius = gridRadius;
-			// The model should be replaced by the app, not here
-		}
 		this.buildSlots();
 	}
 
@@ -46,7 +44,7 @@ export default class HexTilesGameBoard {
 
 	buildSlots() {
 		this.slots = [];
-		const R = this.gridRadius;
+		const R = this.model.gridRadius;
 		const cornerRadiusRatio = this.cornerRadiusRatio;
 		for (let q = -R; q <= R; q++) {
 			for (let r = -R; r <= R; r++) {
@@ -61,6 +59,22 @@ export default class HexTilesGameBoard {
 		}
 	}
 
+	// Helper: get axial coordinates for a slot index (matches createEmptyBoard order)
+	getSlotAxialCoords(idx) {
+		let count = 0;
+		const R = this.model.gridRadius;
+		for (let q = -R; q <= R; q++) {
+			for (let r = -R; r <= R; r++) {
+				const s = -q - r;
+				if (Math.abs(s) <= R) {
+					if (count === idx) return { q, r, s };
+					count++;
+				}
+			}
+		}
+		return { q: 0, r: 0, s: 0 };
+	}
+
 	draw() {
 		// Layout and background logic from App4
 		if (typeof width !== 'undefined') {
@@ -70,7 +84,7 @@ export default class HexTilesGameBoard {
 			const bottomOffset = 100; // px from bottom of board to bottom of page (for reset button)
 			const playableWidth = Math.min(width - marginX * 2, maxBoardWidth);
 			const playableHeight = Math.max(0, height - topOffset - bottomOffset);
-			const G = this.gridRadius;
+			const G = this.model.gridRadius;
 			const paddingRatio = this.paddingRatio;
 
 			// Background hexagon
@@ -104,7 +118,7 @@ export default class HexTilesGameBoard {
 			// Update background hexagon radius and position
 			this.backgroundHexagon.x = width / 2;
 			this.backgroundHexagon.y = topOffset + this.radius * (1 + paddingRatio);
-			this.backgroundHexagon.radius = this.radius * (this.gridRadius * 2 + 1) * 1.1;
+			this.backgroundHexagon.radius = this.radius * (this.model.gridRadius * 2 + 1) * 1.1;
 			// Draw background hexagon
 			push();
 			this.backgroundHexagon.draw();
@@ -113,41 +127,50 @@ export default class HexTilesGameBoard {
 
 		// Draw board slots and tiles
 		push();
+		const tiles = this.model.getTiles();
 		this.slots.forEach((slot, idx) => {
 			const coords = this.getSlotCoords(idx);
 			slot.setPosition(coords.x, coords.y);
 			slot.draw();
-		});
-		const tiles = this.model.getTiles();
-		tiles.forEach((entry, idx) => {
+			// Find the tile for this slot (if any)
+			const axial = this.getSlotAxialCoords(idx);
+			let entry = null;
+			if (tiles && tiles.length > 0) {
+				entry = tiles.find(t => t && t.q === axial.q && t.r === axial.r);
+			}
+			// Draw tile if present
 			if (entry && entry.present) {
-				const { q, r, s, dir } = entry;
-				const { x, y } = this.axialToPixel(q, r);
-				// the target is the tile that this tile is pointing to
+				const { dir } = entry;
+				const { x, y } = coords;
 				const tile = new HexTile({ x, y, radius: this.radius, arrowDir: dir, cornerRadiusRatio: this.cornerRadiusRatio });
 				tile.draw();
-				if (this.isDebug) {
-					push();
-					textAlign(CENTER, CENTER);
-					textSize(Math.max(10, this.radius * 0.3));
-					noStroke();
-					fill(255, 255, 255, 150);
-					const debugString = `${q},${r}`;
-					text(debugString, x, y - 15);
-					let targetTile = this.model.getTile(q, r);
+			}
+			// Debug overlay for every slot
+			if (this.isDebug) {
+				push();
+				textAlign(CENTER, CENTER);
+				textSize(Math.max(10, this.radius * 0.3));
+				noStroke();
+				fill(255, 255, 255, 150);
+				// Find q, r for this slot
+				const q = axial.q, r = axial.r;
+				const debugString = `${q},${r}`;
+				text(debugString, coords.x, coords.y - 15);
+				// Show target for present tile, or null
+				let targetString = 'null';
+				if (entry && entry.present) {
+					const targetTile = this.model.getTile(q, r);
 					if (targetTile) {
 						const dirObj = HEX_DIRECTIONS.find(d => d.name === targetTile.dir);
 						if (dirObj) {
 							const pointedTile = this.model.getPointedTile(targetTile);
-							noStroke();
-							textSize(Math.max(10, this.radius * 0.3));
-							fill(255, 255, 0, 150);
-							const targetString = (pointedTile) ? `${pointedTile.q},${pointedTile.r}` : 'null';
-							text(targetString, x, y + 17);
+							targetString = (pointedTile) ? `${pointedTile.q},${pointedTile.r}` : 'null';
 						}
 					}
-					pop();
 				}
+				fill(255, 255, 0, 150);
+				text(targetString, coords.x, coords.y + 17);
+				pop();
 			}
 		});
 		pop();
@@ -155,7 +178,7 @@ export default class HexTilesGameBoard {
 
 	getSlotCoords(idx) {
 		let count = 0;
-		const R = this.gridRadius;
+		const R = this.model.gridRadius;
 		for (let q = -R; q <= R; q++) {
 			for (let r = -R; r <= R; r++) {
 				const s = -q - r;
@@ -170,7 +193,7 @@ export default class HexTilesGameBoard {
 
 	getTileCoords(idx) {
 		let count = 0;
-		const R = this.gridRadius;
+		const R = this.model.gridRadius;
 		for (let q = -R; q <= R; q++) {
 			for (let r = -R; r <= R; r++) {
 				const s = -q - r;

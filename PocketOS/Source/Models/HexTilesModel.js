@@ -18,6 +18,14 @@ export default class HexTilesModel {
 		this.initTiles();
 	}
 
+	// Set a new gridRadius and regenerate tiles
+	setGridRadius(newRadius) {
+		if (typeof newRadius === 'number') {
+			this.gridRadius = newRadius;
+			this.initTiles();
+		}
+	}
+
 	// Helper: create array of all valid tile positions
 	createEmptyBoard() {
 		const R = this.gridRadius;
@@ -104,7 +112,7 @@ export default class HexTilesModel {
 
 		// Diversity level: higher means more cycles and swap attempts
 		const diversityLevel = 4; // More cycles for higher diversity
-		const swapExhaustionLimit = 60 * positions.length; // More failed swaps allowed
+		const swapExhaustionLimit = 40 * positions.length; // More failed swaps allowed
 
 		// 1. Start with all tiles pointing in a single random direction (guaranteed winnable)
 		const startDir = directions[Math.floor(Math.random() * directions.length)].name;
@@ -139,9 +147,27 @@ export default class HexTilesModel {
 		}
 	}
 
-	// Get all tile objects (with q, r, s, dir, present)
+	// Get all tile objects (with q, r, s, dir, present) for the current gridRadius
 	getTiles() {
-		return this.tiles;
+		// Always return a tile object for every valid (q, r, s) in the current gridRadius
+		const R = this.gridRadius;
+		const tileMap = new Map();
+		if (this.tiles && this.tiles.length > 0) {
+			for (const t of this.tiles) {
+				if (t) tileMap.set(`${t.q},${t.r}`, t);
+			}
+		}
+		const result = [];
+		for (let q = -R; q <= R; q++) {
+			for (let r = -R; r <= R; r++) {
+				const s = -q - r;
+				if (Math.abs(s) <= R) {
+					const key = `${q},${r}`;
+					result.push(tileMap.get(key) || { q, r, s, present: false });
+				}
+			}
+		}
+		return result;
 	}
 
 	// Remove a tile at (q, r)
