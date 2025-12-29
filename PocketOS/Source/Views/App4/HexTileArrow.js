@@ -1,5 +1,8 @@
-export default class HexTileArrow {
+import View from '../../Core/View.js';
+
+export default class HexTileArrow extends View {
 	constructor({ stroke = '#ffffff', strokeWeight = 3 } = {}) {
+		super();
 		this.stroke = stroke;
 		this.strokeWeight = strokeWeight;
 	}

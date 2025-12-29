@@ -1,8 +1,10 @@
 // DinoDock - Manages clicked DinoTile instances and tracks game state
+import View from '../../Core/View.js';
 import DinoTile from './DinoTile.js';
 
-export default class DinoDock {
+export default class DinoDock extends View {
 	constructor() {
+		super();
 		this.maxDockTiles = 8;
 		this.tiles = []; // Array of DinoTile instances
 		this.gameState = 'playing'; // 'playing', 'won', 'lost'
@@ -26,7 +28,7 @@ export default class DinoDock {
 
 	addTile(dinoTile) {
 		if (this.gameState !== 'playing') return false;
-		
+
 		// Create a new tile for the dock with fixed slot dimensions
 		const dockTile = new DinoTile({
 			sheetKey: dinoTile.sheetKey,
@@ -59,7 +61,7 @@ export default class DinoDock {
 			for (const tile of this.tiles) {
 				tileFreq[tile.tileIndex] = (tileFreq[tile.tileIndex] || 0) + 1;
 			}
-			
+
 			// Find first tileIndex with 3 or more occurrences
 			for (const tileIndex in tileFreq) {
 				if (tileFreq[tileIndex] >= 3) {
@@ -126,7 +128,7 @@ export default class DinoDock {
 		for (let i = 0; i < this.maxDockTiles; i++) {
 			const x = this.padding + i * this.tileSpacing;
 			const y = this.dockY + (this.dockHeight - this.slotHeight) / 2;
-			
+
 			// Draw empty slot outline
 			noFill();
 			stroke(0xEF, 0xD0, 0xA4);
@@ -168,7 +170,7 @@ export default class DinoDock {
 
 	updateGameState(isBoardWon) {
 		if (this.gameState !== 'playing') return;
-		
+
 		// Win if board is empty and dock is empty
 		if (isBoardWon && this.tiles.length === 0) {
 			this.gameState = 'won';

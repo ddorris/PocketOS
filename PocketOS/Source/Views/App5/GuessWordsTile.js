@@ -1,4 +1,6 @@
-export default class GuessWordsTile {
+import View from '../../Core/View.js';
+
+export default class GuessWordsTile extends View {
 	draw({ x, y, size, letter, strokeColor, fillColor, textColor, scaleX = 1 }) {
 		push();
 		translate(x + size / 2, y + size / 2);

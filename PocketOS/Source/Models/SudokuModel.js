@@ -1,6 +1,7 @@
+import Model from '../Core/Model.js';
 // Encapsulated Sudoku domain model: board generation, solving, validation
-export default class SudokuModel {
-	constructor() { }
+export default class SudokuModel extends Model {
+	constructor() { super(); }
 
 	createEmptyBoard() {
 		return Array.from({ length: 9 }, () => Array(9).fill(0));

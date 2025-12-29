@@ -1,5 +1,8 @@
-export default class AppIconButton {
+import View from '../Core/View.js';
+
+export default class AppIconButton extends View {
 	constructor(config) {
+		super();
 		this.id = config.id;
 		this.label = config.name;
 		this.icon = config.icon;
@@ -21,7 +24,7 @@ export default class AppIconButton {
 			my <= this.y + this.size
 		);
 	}
-	
+
 	handlePress(mx, my) {
 		if (this.isMouseOver(mx, my)) {
 			this.isPressed = true;
@@ -29,7 +32,7 @@ export default class AppIconButton {
 		}
 		return false;
 	}
-	
+
 	handleRelease(mx, my) {
 		if (this.isPressed && this.isMouseOver(mx, my)) {
 			this.onSelect();
@@ -41,8 +44,8 @@ export default class AppIconButton {
 	}
 
 	setSelected(isSelected) { this.isSelected = isSelected; }
-	update(mx, my) { this.isHovered = this.isMouseOver(mx, my);	}
-	
+	update(mx, my) { this.isHovered = this.isMouseOver(mx, my); }
+
 	display() {
 		push();
 

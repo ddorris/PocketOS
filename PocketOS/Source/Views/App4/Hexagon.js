@@ -1,5 +1,8 @@
-export default class Hexagon {
+import View from '../../Core/View.js';
+
+export default class Hexagon extends View {
 	constructor({ x = 0, y = 0, radius = 30, fill = '#4da3ff', cornerRadiusRatio = 0, rotation = 0 } = {}) {
+		super();
 		this.x = x;
 		this.y = y;
 		this.radius = radius;

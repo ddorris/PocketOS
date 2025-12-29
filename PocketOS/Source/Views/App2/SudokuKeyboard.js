@@ -1,5 +1,8 @@
-export default class SudokuKeyboard {
+import View from '../../Core/View.js';
+
+export default class SudokuKeyboard extends View {
 	constructor({ onKeyPress } = {}) {
+		super();
 		this.onKeyPress = onKeyPress || (() => { });
 		this.x = 0; this.y = 0; this.w = 0; this.h = 0;
 		this.cols = 10; // 1..9 + backspace

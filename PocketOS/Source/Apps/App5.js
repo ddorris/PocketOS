@@ -1,4 +1,4 @@
-import System from '../Core/System.js';
+import App from '../Core/App.js';
 import AppInfo from '../Views/AppInfo.js';
 import GuessWordsModel from '../Models/GuessWordsModel.js';
 import GuessWordsKeyboard from '../Views/App5/GuessWordsKeyboard.js';
@@ -16,7 +16,7 @@ const COLORS = {
 	text: '#ffffff'
 };
 
-export default class App5 extends System {
+export default class App5 extends App {
 	constructor() {
 		super();
 		this.model = new GuessWordsModel();

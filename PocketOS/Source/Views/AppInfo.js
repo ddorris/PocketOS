@@ -1,5 +1,8 @@
-export default class AppInfo {
+import View from '../Core/View.js';
+
+export default class AppInfo extends View {
 	constructor({ info, icon }) {
+		super();
 		this.info = info;
 		this.icon = icon;
 	}

@@ -1,10 +1,13 @@
-export default class GuessWordsKeyboard {
+import View from '../../Core/View.js';
+
+export default class GuessWordsKeyboard extends View {
 	constructor(config) {
+		super();
 		this.onKeyPress = config.onKeyPress || (() => { });
 		this.keys = [
 			['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
 			['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-			['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫']
+			['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '\u232b']
 		];
 		this.keyStates = {}; // 'correct', 'present', 'absent'
 		this.isEnabled = true; // Allow toggling keyboard on/off

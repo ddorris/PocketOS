@@ -11,8 +11,10 @@ export const HEX_DIRECTIONS = [
 ];
 
 // Main game model class
-export default class HexTilesModel {
+import Model from '../Core/Model.js';
+export default class HexTilesModel extends Model {
 	constructor({ gridRadius = 3 } = {}) {
+		super();
 		this.gridRadius = gridRadius;
 		this.tiles = [];
 		this.initTiles();

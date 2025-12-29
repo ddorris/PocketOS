@@ -1,8 +1,9 @@
 // DinoTile - View entity representing a tile index on a sprite sheet
+import View from '../../Core/View.js';
 
-
-export default class DinoTile {
+export default class DinoTile extends View {
 	constructor({ sheetKey, tileIndex, dx = 0, dy = 0, dw = 64, dh = 64 }) {
+		super();
 		this.sheetKey = sheetKey;
 		this.tileIndex = tileIndex;
 		this.dx = dx;

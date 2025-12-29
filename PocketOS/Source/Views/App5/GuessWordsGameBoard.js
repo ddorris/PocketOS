@@ -1,7 +1,9 @@
+import View from '../../Core/View.js';
 import GuessWordsTile from './GuessWordsTile.js';
 
-export default class GuessWordsGameBoard {
+export default class GuessWordsGameBoard extends View {
 	constructor({ colors }) {
+		super();
 		this.colors = colors;
 		this.animations = [];
 		this.tile = new GuessWordsTile();

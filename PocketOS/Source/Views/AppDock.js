@@ -1,8 +1,8 @@
 // Manages a row of AppIconButton instances for the home screen
-import System from '../Core/System.js';
+import View from '../Core/View.js';
 import AppIconButton from './AppIconButton.js';
 
-export default class AppDock extends System {
+export default class AppDock extends View {
 	constructor({ spacing = 78, size = 64, labelSize = 11, dockHeight = 120, padding = 16 } = {}) {
 		super();
 		this.appData = [];
@@ -26,7 +26,7 @@ export default class AppDock extends System {
 		this.buildButtons();
 		this.onSelect(this.activeAppId);
 	}
-	
+
 	buildButtons() {
 		this.buttons.length = 0;
 		for (const app of this.appData) {
@@ -61,7 +61,7 @@ export default class AppDock extends System {
 		line(0, this.dockHeight - 1, width, this.dockHeight - 1);
 
 		this.layoutButtons();
-	
+
 		push();
 		this.applyClip();
 		for (const btn of this.buttons) {
@@ -80,7 +80,7 @@ export default class AppDock extends System {
 			}
 		}
 	}
-	
+
 	handleSelect(appId) {
 		const isNewSelection = this.activeAppId !== appId;
 		if (isNewSelection) {
@@ -90,7 +90,7 @@ export default class AppDock extends System {
 		}
 		this.onSelect(appId); // Always notify, even if re-selecting same app
 	}
-	
+
 	getStoredActiveAppId() {
 		try {
 			if (typeof localStorage === 'undefined') return null;
@@ -102,7 +102,7 @@ export default class AppDock extends System {
 			return null;
 		}
 	}
-	
+
 	persistActiveAppId(appId) {
 		try {
 			if (typeof localStorage === 'undefined') return;
@@ -111,13 +111,13 @@ export default class AppDock extends System {
 			// ignore storage errors in constrained environments
 		}
 	}
-	
+
 	applySelectionState() {
 		for (const btn of this.buttons) {
 			btn.setSelected(btn.id === this.activeAppId);
 		}
 	}
-	
+
 	layoutButtons() {
 		const count = this.buttons.length;
 		const contentWidth = count > 0 ? (count - 1) * this.spacing + this.size : 0;
@@ -129,7 +129,7 @@ export default class AppDock extends System {
 		const startX = fits ? (width - contentWidth) / 2 : this.padding - this.scrollOffset;
 		const labelGap = 6; // match AppIconButton label offset
 		const totalHeight = this.size + labelGap + this.labelSize;
-		
+
 		for (let i = 0; i < count; i++) {
 			const btn = this.buttons[i];
 			btn.x = startX + i * this.spacing;
@@ -143,10 +143,10 @@ export default class AppDock extends System {
 		drawingContext.rect(0, 0, width, this.dockHeight);
 		drawingContext.clip();
 	}
-	
+
 	clearClip() { drawingContext.restore(); }
 	windowResized() { this.layoutButtons(); }
-	
+
 	mouseWheel(event) {
 		const deltaY = event?.delta ?? 0;
 		if (this.maxScroll <= 0) return false;

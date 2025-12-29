@@ -1,4 +1,4 @@
-import System from '../Core/System.js';
+import App from '../Core/App.js';
 import AppInfo from '../Views/AppInfo.js';
 import DinoDock from '../Views/App3/DinoDock.js';
 import DinoBoard from '../Views/App3/DinoBoard.js';
@@ -6,7 +6,7 @@ import Button from '../Views/Button.js';
 import SpriteSheetSystem from '../Systems/SpriteSheetSystem.js';
 import DinoTilesModel from '../Models/DinoTilesModel.js';
 
-export default class App3 extends System {
+export default class App3 extends App {
 	constructor() {
 		super();
 		this.model = new DinoTilesModel();

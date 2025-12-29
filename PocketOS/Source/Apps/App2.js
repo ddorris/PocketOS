@@ -1,10 +1,10 @@
-import System from '../Core/System.js';
+import App from '../Core/App.js';
 import AppInfo from '../Views/AppInfo.js';
 import SudokuGame from '../Views/App2/SudokuGame.js';
 import SudokuModel from '../Models/SudokuModel.js';
 
 // App2 entry point: runs the p5-based SudokuGame inside PocketOS
-export default class App2 extends System {
+export default class App2 extends App {
 	constructor() {
 		super();
 		this.model = new SudokuModel();

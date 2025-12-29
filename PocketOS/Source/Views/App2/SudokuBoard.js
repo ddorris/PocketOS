@@ -1,7 +1,9 @@
+import View from '../../Core/View.js';
 import SudokuModel from '../../Models/SudokuModel.js';
 
-export default class SudokuBoard {
+export default class SudokuBoard extends View {
 	constructor({ colors } = {}) {
+		super();
 		this.colors = colors || { EMPTY_CELL: 'white', CLUE_CELL: '#ccc', VALID: '#1c1', ERROR: '#e22', DEFAULT: '#eee' };
 		this.model = new SudokuModel();
 		this.matrix = this.model.createEmptyBoard();
@@ -133,7 +135,7 @@ export default class SudokuBoard {
 			}
 		}
 		pop();
-		
+
 		// thick 3x3 lines
 		stroke('#666'); strokeWeight(3);
 		strokeJoin(ROUND); strokeCap(ROUND);

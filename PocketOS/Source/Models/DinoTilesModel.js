@@ -1,12 +1,14 @@
+import Model from '../Core/Model.js';
 // DinoTiles - Game model for stacked tile matching
-export default class DinoTilesModel {
+export default class DinoTilesModel extends Model {
 	constructor() {
+		super();
 		this.tiles = [];
 	}
 
 	initializeGame(layout, deckConfigs) {
 		const deck = this.buildTripletDeck(layout.slots.length, deckConfigs);
-		
+
 		// Build tile records with spatial data
 		this.tiles = layout.slots.map((slot, idx) => ({
 			id: slot.id || `slot-${idx}`,
@@ -73,7 +75,7 @@ export default class DinoTilesModel {
 			picks.push(face, face, face);
 			emittedTriplets++;
 		}
-		
+
 		// Shuffle deck
 		for (let i = picks.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -97,13 +99,13 @@ export default class DinoTilesModel {
 				const a = this.tiles[i];
 				const b = this.tiles[j];
 				if (b.layer <= a.layer) continue;
-				
+
 				// Grid-based overlap check (tiles are 1 unit wide/tall in grid space)
 				const overlap = !(
 					a.gx + 1 <= b.gx || b.gx + 1 <= a.gx ||
 					a.gy + 1 <= b.gy || b.gy + 1 <= a.gy
 				);
-				
+
 				if (overlap) {
 					a.blockers.add(b.id);
 					b.covers.add(a.id);
@@ -138,7 +140,7 @@ export default class DinoTilesModel {
 
 	selectTile(tile) {
 		if (!this.isSelectable(tile)) return false;
-		
+
 		tile.removed = true;
 		// Unblock tiles this one was covering
 		for (const lowerId of tile.covers) {

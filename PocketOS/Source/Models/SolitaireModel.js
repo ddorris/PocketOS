@@ -1,4 +1,5 @@
 // SolitaireModel - Game model for Solitaire
-export default class SolitaireModel {
+import Model from '../Core/Model.js';
+export default class SolitaireModel extends Model {
 	// ...existing code from Solitaire.js...
 }

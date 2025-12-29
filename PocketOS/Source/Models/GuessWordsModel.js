@@ -1,5 +1,7 @@
-export default class GuessWordsModel {
+import Model from '../Core/Model.js';
+export default class GuessWordsModel extends Model {
 	constructor() {
+		super();
 		this.answers = [];
 		this.validWords = new Set();
 		this.targetWord = '';
@@ -9,7 +11,7 @@ export default class GuessWordsModel {
 		this.results = [];
 		this.gameStatus = 'playing'; // playing, won, lost
 		this.attemptedGuesses = new Set(); // Track guesses to prevent duplicates
-		this.wordListUrls = {answers: '', allowed: ''};
+		this.wordListUrls = { answers: '', allowed: '' };
 	}
 
 	async init() {

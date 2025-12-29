@@ -1,8 +1,8 @@
-import System from '../Core/System.js';
+import App from '../Core/App.js';
 import AppInfo from '../Views/AppInfo.js';
 import SolitaireModel from '../Models/SolitaireModel.js';
 
-export default class App1 extends System {
+export default class App1 extends App {
 	constructor() {
 		super();
 		this.model = new SolitaireModel();

@@ -1,9 +1,11 @@
+import View from '../../Core/View.js';
 import HexTile from './HexTile.js';
 import Hexagon from './Hexagon.js';
 import { HEX_DIRECTIONS } from '../../Models/HexTilesModel.js';
 
-export default class HexTilesGameBoard {
+export default class HexTilesGameBoard extends View {
 	constructor(model, isDebug = false) {
+		super();
 		this.originX = 0;
 		this.originY = 0;
 		this.radius = 30;

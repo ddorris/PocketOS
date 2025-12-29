@@ -1,8 +1,10 @@
+import View from '../../Core/View.js';
 import GuessWordsTile from './GuessWordsTile.js';
 import Button from '../Button.js';
 
-export default class GuessWordsHeader {
+export default class GuessWordsHeader extends View {
 	constructor({ maxWidth, colors, onToggleCheat, onReset }) {
+		super();
 		this.maxWidth = maxWidth;
 		this.colors = colors;
 		this.tile = new GuessWordsTile();

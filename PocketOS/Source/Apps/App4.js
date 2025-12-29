@@ -1,10 +1,10 @@
 import Button from '../Views/Button.js';
-import System from '../Core/System.js';
+import App from '../Core/App.js';
 import AppInfo from '../Views/AppInfo.js';
 import HexTilesGameBoard from '../Views/App4/HexTilesGameBoard.js';
 import HexTilesModel from '../Models/HexTilesModel.js';
 
-export default class App4 extends System {
+export default class App4 extends App {
 	constructor() {
 		super();
 		this.appDockHeight = 120;

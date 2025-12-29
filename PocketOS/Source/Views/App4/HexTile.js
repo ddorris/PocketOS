@@ -1,9 +1,11 @@
+import View from '../../Core/View.js';
 import Hexagon from './Hexagon.js';
 import HexTileArrow from './HexTileArrow.js';
 import { HEX_DIRECTIONS } from '../../Models/HexTilesModel.js';
 
-export default class HexTile {
+export default class HexTile extends View {
 	constructor({ x = 0, y = 0, radius = 30, fill = '#4da3ff', arrowDir = 'up', cornerRadiusRatio = 0 } = {}) {
+		super();
 		this.hex = new Hexagon({ x, y, radius, fill, cornerRadiusRatio });
 		this.arrowDir = arrowDir;
 		// Lookup color from HEX_DIRECTIONS
