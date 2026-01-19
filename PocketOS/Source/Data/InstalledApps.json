@@ -7,7 +7,22 @@
 		"entry": "./Source/Apps/App1.js",
 		"icon": "./PocketOS/Assets/Icons/App1.svg",
 		"model": "./Source/Models/Solitaire.js",
-		"bundle": {}
+		"bundle": {
+			"spriteSheets": [
+				{
+					"key": "cards",
+					"url": "./PocketOS/Assets/Solitaire.png",
+					"sx": [0, 71, 142, 213, 284, 355, 426, 497, 568, 639, 710, 781, 852],
+					"sy": [0, 96, 192, 288, 384, 480],
+					"sw": 71,
+					"sh": 96,
+					"cols": 13,
+					"rows": 6,
+					"dw": 71,
+					"dh": 96
+				}
+			]
+		}
 	},
 	{
 		"id": 2,
