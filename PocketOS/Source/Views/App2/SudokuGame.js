@@ -6,10 +6,10 @@ import SudokuKeyboard from './SudokuKeyboard.js';
 
 // p5-based Sudoku view: mirrors WebSudoku behavior using canvas
 export default class SudokuGame extends View {
-	constructor({ isEnabled } = {}) {
+	constructor({ isEnabled, font } = {}) {
 		super();
 		this.model = new SudokuModel();
-		this.board = new SudokuBoard({});
+		this.board = new SudokuBoard({ font });
 		this.keyboard = new SudokuKeyboard({ onKeyPress: (k) => this.handleKey(k) });
 
 		this.appDockHeight = 120;

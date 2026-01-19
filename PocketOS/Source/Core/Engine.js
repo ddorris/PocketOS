@@ -9,6 +9,8 @@ export default class Engine extends System {
 		super();
 		// Expose System methods globally for event handling
 		Object.getOwnPropertyNames(System.prototype).forEach(m => window[m] = (...args) => this[m](...args) );
+		// Preload is special: runs before setup, must await all system preloads
+		window.preload = async () => { await this.preload(); };
 		// Setup is special: it's async and must await all system initialization
 		window.setup = async () => { await this.setup(); };
 	}
@@ -24,6 +26,13 @@ export default class Engine extends System {
 		const index = this.systems.indexOf(system);
 		if (index > -1) this.systems.splice(index, 1);
 		return this;
+	}
+
+	async preload() {
+		// Sequentially await each system's preload to ensure assets are ready before setup
+		for (const s of this.systems) {
+			if (s.preload) await s.preload();
+		}
 	}
 
 	async setup() {

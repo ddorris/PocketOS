@@ -2,8 +2,9 @@ import View from '../../Core/View.js';
 import SudokuModel from '../../Models/SudokuModel.js';
 
 export default class SudokuBoard extends View {
-	constructor({ colors } = {}) {
+	constructor({ colors, font } = {}) {
 		super();
+		this.font = font; // Preloaded p5.Font object
 		this.colors = colors || { EMPTY_CELL: 'white', CLUE_CELL: '#ccc', VALID: '#1c1', ERROR: '#e22', DEFAULT: '#eee' };
 		this.model = new SudokuModel();
 		this.matrix = this.model.createEmptyBoard();
@@ -127,7 +128,12 @@ export default class SudokuBoard extends View {
 				const v = this.matrix[r][c];
 				if (v) {
 					noStroke();
-					textFont('Varela Round');
+					// Use preloaded font if available, otherwise fall back to string name
+					if (this.font) {
+						textFont(this.font);
+					} else {
+						textFont('Varela Round');
+					}
 					textStyle(BOLD);
 					if (isClue) fill('#666'); else fill('#0066cc');
 					text(v, px + size / 2, py + size / 2 + 1);

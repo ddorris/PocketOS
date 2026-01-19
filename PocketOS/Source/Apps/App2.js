@@ -18,7 +18,9 @@ export default class App2 extends App {
 			this.appInfo = new AppInfo({ info: appInfo, icon });
 		}
 
-		this.game = new SudokuGame({ model: this.model, isEnabled: () => this.enabled });
+		// Get preloaded font from engine state
+		const font = this.engine.state.fonts?.['Varela Round'];
+		this.game = new SudokuGame({ model: this.model, isEnabled: () => this.enabled, font });
 	}
 
 	draw() {

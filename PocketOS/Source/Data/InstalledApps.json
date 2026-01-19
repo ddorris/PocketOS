@@ -17,7 +17,14 @@
 		"entry": "./Source/Apps/App2.js",
 		"icon": "./PocketOS/Assets/Icons/App2.svg",
 		"model": "./Source/Models/Sudoku.js",
-		"bundle": {}
+		"bundle": {
+			"fonts": [
+				{
+					"name": "Varela Round",
+					"url": "./PocketOS/Assets/Fonts/VarelaRound-Regular.ttf"
+				}
+			]
+		}
 	},
 	{
 		"id": 3,
