@@ -14,9 +14,11 @@ export default class SolitaireGame extends View {
 		// Layout constants
 		this.appDockHeight = appDockHeight;
 		this.padding = 8;
-		this.cardGap = 8;
+		this.cardGap = 3;
 		this.cardWidth = 71;
 		this.cardHeight = 96;
+		this.topPadding = 30;        // Extra space at top before foundation/stock row
+		this.tableauTopPadding = 15; // Extra space before tableau piles
 		
 		// Piles (view representations)
 		this.tableau = [];      // 7 tableau piles
@@ -50,7 +52,7 @@ export default class SolitaireGame extends View {
 	
 	createButtons() {
 		this.newGameButton = new Button({
-			label: 'New Game',
+			label: 'Reset',
 			x: 0,
 			y: 0,
 			width: 100,
@@ -182,40 +184,43 @@ export default class SolitaireGame extends View {
 		const tableauWidth = this.cardWidth * 7 + this.cardGap * 6;
 		const tableauStartX = (w - tableauWidth) / 2; // Center tableau
 		
-		// Top row Y position
-		const topRowY = this.appDockHeight + this.padding;
+		// Top row Y position (with extra space at top)
+		const topRowY = this.appDockHeight + this.topPadding;
 		
-		// Stock and Waste (top left of centered layout)
-		this.stock.x = tableauStartX;
-		this.stock.y = topRowY;
-		this.stock.cascadeOffset = 0; // No cascade for stock
-		this.waste.x = tableauStartX + this.cardWidth + this.cardGap;
-		this.waste.y = topRowY;
-		this.waste.cascadeOffset = 0; // No cascade for waste (only one card visible)
-		
-		// Foundation piles (top right, aligned with tableau)
-		const foundationStartX = tableauStartX + tableauWidth - (this.cardWidth * 4 + this.cardGap * 3);
+		// Foundation piles (top left, aligned with tableau)
 		this.foundations.forEach((pile, i) => {
-			pile.x = foundationStartX + i * (this.cardWidth + this.cardGap);
+			pile.x = tableauStartX + i * (this.cardWidth + this.cardGap);
 			pile.y = topRowY;
 			pile.cascadeOffset = 0; // No cascade for foundation (stack)
 		});
 		
-		// Tableau row (below stock/foundation row, centered)
-		const tableauY = topRowY + this.cardHeight + this.padding;
+		// Stock and Waste (top right of centered layout)
+		const stockStartX = tableauStartX + tableauWidth - (this.cardWidth * 2 + this.cardGap);
+		this.waste.x = stockStartX;
+		this.waste.y = topRowY;
+		this.waste.cascadeOffset = 0; // No cascade for waste (only one card visible)
+		this.stock.x = stockStartX + this.cardWidth + this.cardGap;
+		this.stock.y = topRowY;
+		this.stock.cascadeOffset = 0; // No cascade for stock
+		
+		// Tableau row (below stock/foundation row, centered, with extra space)
+		const tableauY = topRowY + this.cardHeight + this.padding + this.tableauTopPadding;
 		this.tableau.forEach((pile, i) => {
 			pile.x = tableauStartX + i * (this.cardWidth + this.cardGap);
 			pile.y = tableauY;
 			pile.cascadeOffset = Math.min(20, this.cardHeight * 0.2); // Responsive cascade spacing
 		});
 		
-		// Buttons (bottom left, offset from tableau)
-		const buttonY = h - this.padding - this.newGameButton.height + this.appDockHeight;
-		this.newGameButton.x = tableauStartX;
+		// Buttons (centered horizontally, moved up from bottom to avoid iPhone edge)
+		const buttonY = h - this.newGameButton.height; // Extra 15px to avoid rounded edge
+		const totalButtonWidth = this.newGameButton.width + 10 + this.undoButton.width;
+		const buttonsStartX = (w - totalButtonWidth) / 2;
+		
+		this.newGameButton.x = buttonsStartX;
 		this.newGameButton.y = buttonY;
-		this.undoButton.x = this.newGameButton.x + this.newGameButton.width + 10;
+		this.undoButton.x = buttonsStartX + this.newGameButton.width + 10;
 		this.undoButton.y = buttonY;
-		this.autoCompleteButton.x = this.undoButton.x + this.undoButton.width + 10;
+		this.autoCompleteButton.x = buttonsStartX + this.newGameButton.width + 10 + this.undoButton.width + 10;
 		this.autoCompleteButton.y = buttonY;
 	}
 	
@@ -249,7 +254,10 @@ export default class SolitaireGame extends View {
 			if (this.dragSource && this.hoverTarget?.pile === pile) {
 				this.drawPileHighlight(pile, this.hoverTarget.valid);
 			}
-			pile.draw(drawConfig);
+			pile.draw({
+				...drawConfig,
+				foundationSuit: this.model.foundationSuits[i]
+			});
 		});
 		this.stock.draw(drawConfig);
 		this.waste.draw(drawConfig);
@@ -266,6 +274,8 @@ export default class SolitaireGame extends View {
 		// Check for win condition
 		if (this.model.isGameWon()) {
 			this.drawVictoryMessage();
+		} else if (!this.model.hasValidMoves() && !this.model.canAutoComplete()) {
+			this.drawDeadEndMessage();
 		}
 	}
 	
@@ -300,12 +310,62 @@ export default class SolitaireGame extends View {
 		textAlign(CENTER, CENTER);
 		textSize(48);
 		textStyle(BOLD);
-		text('YOU WIN!', width / 2, height / 2);
+		text('YOU WIN!', width / 2, height / 2 - 60);
 		
 		textSize(24);
 		textStyle(NORMAL);
 		fill(255);
-		text('Click "New Game" to play again', width / 2, height / 2 + 60);
+		text('Click "New Game" to play again', width / 2, height / 2);
+		
+		// Draw buttons centered on top of victory screen
+		const totalButtonWidth = this.newGameButton.width + 10 + this.undoButton.width + 10 + this.autoCompleteButton.width;
+		const buttonsStartX = (width - totalButtonWidth) / 2;
+		const buttonsY = height / 2 + 80; // Move up from bottom to avoid screen edge
+		
+		this.newGameButton.x = buttonsStartX;
+		this.newGameButton.y = buttonsY;
+		this.newGameButton.draw();
+		
+		this.undoButton.x = buttonsStartX + this.newGameButton.width + 10;
+		this.undoButton.y = buttonsY;
+		this.undoButton.draw();
+		
+		this.autoCompleteButton.x = buttonsStartX + this.newGameButton.width + 10 + this.undoButton.width + 10;
+		this.autoCompleteButton.y = buttonsY;
+		this.autoCompleteButton.draw();
+		
+		pop();
+	}
+	
+	drawDeadEndMessage() {
+		push();
+		fill(0, 0, 0, 150);
+		rect(0, this.appDockHeight, width, height - this.appDockHeight);
+		
+		fill(204, 85, 0); // Orange color for stuck state
+		textAlign(CENTER, CENTER);
+		textSize(36);
+		textStyle(BOLD);
+		text('No Valid Moves!', width / 2, height / 2 - 60);
+		
+		textSize(20);
+		textStyle(NORMAL);
+		fill(255);
+		text('Try using Undo or start a New Game', width / 2, height / 2);
+		
+		// Draw buttons centered on top of message
+		const totalButtonWidth = this.newGameButton.width + 10 + this.undoButton.width;
+		const buttonsStartX = (width - totalButtonWidth) / 2;
+		const buttonsY = height / 2 + 80;
+		
+		this.newGameButton.x = buttonsStartX;
+		this.newGameButton.y = buttonsY;
+		this.newGameButton.draw();
+		
+		this.undoButton.x = buttonsStartX + this.newGameButton.width + 10;
+		this.undoButton.y = buttonsY;
+		this.undoButton.draw();
+		
 		pop();
 	}
 	
@@ -418,10 +478,11 @@ export default class SolitaireGame extends View {
 	}
 	
 	startDrag(mx, my) {
-		// Check all piles for hit (waste, tableau only - can't drag from foundation/stock)
+		// Check all piles for hit (waste, tableau, and foundations can be dragged)
 		const draggablePiles = [
 			{ pile: this.waste, type: 'waste', index: 0 },
-			...this.tableau.map((pile, i) => ({ pile, type: 'tableau', index: i }))
+			...this.tableau.map((pile, i) => ({ pile, type: 'tableau', index: i })),
+			...this.foundations.map((pile, i) => ({ pile, type: 'foundation', index: i }))
 		];
 		
 		for (const { pile, type, index } of draggablePiles) {
@@ -528,10 +589,11 @@ export default class SolitaireGame extends View {
 	}
 	
 	findCardUnderCursor(mx, my) {
-		// Check waste and tableau piles for card under cursor
+		// Check waste, tableau, and foundation piles for card under cursor
 		const draggablePiles = [
 			{ pile: this.waste, type: 'waste', index: 0 },
-			...this.tableau.map((pile, i) => ({ pile, type: 'tableau', index: i }))
+			...this.tableau.map((pile, i) => ({ pile, type: 'tableau', index: i })),
+			...this.foundations.map((pile, i) => ({ pile, type: 'foundation', index: i }))
 		];
 		
 		for (const { pile, type, index } of draggablePiles) {
@@ -597,7 +659,6 @@ export default class SolitaireGame extends View {
 	tryAutoPlay(clickedCard) {
 		// Try to auto-play a card: foundation first, then valid tableau pile (rightmost)
 		const card = clickedCard.card;
-		const foundationIndex = card.suit;
 		
 		// Only top cards can auto-play
 		const pile = clickedCard.pile;
@@ -605,11 +666,26 @@ export default class SolitaireGame extends View {
 			return false; // Not the top card
 		}
 		
-		// Try foundation first
-		if (this.model.canMoveToFoundation(card, foundationIndex)) {
-			this.model.moveCards(clickedCard.type, clickedCard.index, 'foundation', foundationIndex, 1);
-			this.syncPilesWithModel();
-			return true;
+		// Try foundations - check all foundations (they're not pre-assigned to suits)
+		// For Aces, use first available foundation from left
+		if (card.rank === 0) {
+			// Find first empty foundation
+			for (let i = 0; i < 4; i++) {
+				if (this.model.foundations[i].length === 0) {
+					this.model.moveCards(clickedCard.type, clickedCard.index, 'foundation', i, 1);
+					this.syncPilesWithModel();
+					return true;
+				}
+			}
+		} else {
+			// For non-Aces, try to find matching foundation
+			for (let i = 0; i < 4; i++) {
+				if (this.model.canMoveToFoundation(card, i)) {
+					this.model.moveCards(clickedCard.type, clickedCard.index, 'foundation', i, 1);
+					this.syncPilesWithModel();
+					return true;
+				}
+			}
 		}
 		
 		// Try tableau piles (for waste or tableau cards)

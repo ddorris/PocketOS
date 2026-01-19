@@ -11,6 +11,9 @@ export default class SolitaireModel extends Model {
 		// 4 foundation piles (build up by suit A-K)
 		this.foundations = [[], [], [], []];
 		
+		// Track which suit is assigned to each foundation (null = unassigned)
+		this.foundationSuits = [null, null, null, null];
+		
 		// Stock pile (face-down cards to draw)
 		this.stock = [];
 		
@@ -68,9 +71,15 @@ export default class SolitaireModel extends Model {
 		let deck = this.createDeck();
 		deck = this.shuffle(deck);
 		
+		// TODO: Future enhancement - implement winnability check
+		// Use a solver algorithm to reject unwinnable deals and regenerate
+		// This would require implementing a recursive backtracking solver
+		// or using heuristics to estimate winnability
+		
 		// Reset all piles
 		this.tableau = [[], [], [], [], [], [], []];
 		this.foundations = [[], [], [], []];
+		this.foundationSuits = [null, null, null, null];
 		this.stock = [];
 		this.waste = [];
 		this.moveHistory = [];
@@ -128,14 +137,16 @@ export default class SolitaireModel extends Model {
 		if (!card) return false;
 		
 		const foundation = this.foundations[foundationIndex];
+		const assignedSuit = this.foundationSuits[foundationIndex];
 		
-		// Foundation must match card suit
-		// Foundation 0=Spades, 1=Hearts, 2=Clubs, 3=Diamonds
-		if (card.suit !== foundationIndex) return false;
-		
-		// Empty foundation accepts Ace only
+		// If foundation is empty, only accept Ace (and it can be any suit)
 		if (foundation.length === 0) {
 			return card.rank === 0; // Ace
+		}
+		
+		// If foundation has cards, must match the assigned suit
+		if (assignedSuit !== null && card.suit !== assignedSuit) {
+			return false;
 		}
 		
 		// Get top card of foundation
@@ -228,6 +239,11 @@ export default class SolitaireModel extends Model {
 		// Move cards
 		const cards = source.splice(source.length - cardCount, cardCount);
 		target.push(...cards);
+		
+		// If moving to an empty foundation, assign the suit
+		if (toPile === 'foundation' && target.length === cardCount) {
+			this.foundationSuits[toPileIndex] = cards[0].suit;
+		}
 		
 		// If source was tableau, flip top card face-up
 		if (fromPile === 'tableau' && source.length > 0) {
@@ -342,9 +358,14 @@ export default class SolitaireModel extends Model {
 		switch (lastMove.type) {
 			case 'move':
 				// Move cards back from target to source
-				const cards = this.getPile(lastMove.targetType, lastMove.targetIndex)
-					.splice(-lastMove.count, lastMove.count);
+				const targetPile = this.getPile(lastMove.targetType, lastMove.targetIndex);
+				const cards = targetPile.splice(-lastMove.count, lastMove.count);
 				this.getPile(lastMove.sourceType, lastMove.sourceIndex).push(...cards);
+				
+				// If target foundation is now empty, clear its suit assignment
+				if (lastMove.targetType === 'foundation' && targetPile.length === 0) {
+					this.foundationSuits[lastMove.targetIndex] = null;
+				}
 				
 				// If a card was flipped face-up during the original move, flip it back face-down
 				if (lastMove.flippedCard) {

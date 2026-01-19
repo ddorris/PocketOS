@@ -41,12 +41,12 @@ export default class SolitairePile extends View {
 		return positions;
 	}
 	
-	draw({ spriteSheetSystem, cardWidth, cardHeight }) {
+	draw({ spriteSheetSystem, cardWidth, cardHeight, foundationSuit = null }) {
 		this.cardWidth = cardWidth;
 		this.cardHeight = cardHeight;
 		
 		if (this.cards.length === 0) {
-			this.drawEmptySlot();
+			this.drawEmptySlot(foundationSuit);
 			return;
 		}
 		
@@ -63,7 +63,7 @@ export default class SolitairePile extends View {
 		});
 	}
 	
-	drawEmptySlot() {
+	drawEmptySlot(foundationSuit) {
 		push();
 		noFill();
 		stroke(100, 100, 100, 100);
@@ -77,11 +77,18 @@ export default class SolitairePile extends View {
 			noStroke();
 			textAlign(CENTER, CENTER);
 			textSize(32);
-			// Suit symbols: Spades, Hearts, Clubs, Diamonds
-			const suits = ['♠', '♥', '♣', '♦'];
-			text(suits[this.pileIndex] || '', 
-			     this.x + this.cardWidth / 2, 
-			     this.y + this.cardHeight / 2);
+			
+			// Show suit symbol if assigned, otherwise show 'A' for Ace
+			if (foundationSuit !== null) {
+				const suits = ['♠', '♥', '♣', '♦'];
+				text(suits[foundationSuit] || '', 
+				     this.x + this.cardWidth / 2, 
+				     this.y + this.cardHeight / 2);
+			} else {
+				text('A', 
+				     this.x + this.cardWidth / 2, 
+				     this.y + this.cardHeight / 2);
+			}
 		}
 		pop();
 	}

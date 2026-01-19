@@ -31,22 +31,66 @@ Classic Klondike Solitaire implementation for PocketOS using the sprite sheet sy
 
 ### Round 2 - January 18, 2026
 
-**1. Drop Zone Highlight Visual**
+**1. Drop Zone Highlight Visual** ✅ FIXED
 - **Issue:** Red/green highlight only shows empty slot area, not full pile visual area
-- **Current:** `drawPileHighlight()` outlines card width × cardHeight from pile.x/pile.y
-- **Expected:** Highlight should extend across full cascade area including top card location
-- **Priority:** Medium (visual feedback clarity)
+- **Fixed:** Updated `drawPileHighlight()` to extend across full cascade area including top card location
 
-**2. Multi-Card Cascade Selection**
+**2. Multi-Card Cascade Selection** ✅ FIXED
 - **Issue:** Can only select topmost card; can't select intermediate face-up cards in cascade
-- **Expected Behavior:** 
-  - Click any face-up card in cascade to select it + all face-up cards above it
-  - Drag sequence to valid tableau drop zone
-  - Bottom card of selection validates move for entire sequence
-  - Auto-play should work on card sequences, not just single cards
-  - Example: Red Queen with Black Jack on top → drag both together or auto-play together
-- **Current:** Only topmost card is selectable via `hitTest()`
-- **Priority:** High (core gameplay feature missing)
+- **Fixed:** Updated `hitTest()` to return cardCount, `startDrag()` uses cardCount for multi-card sequences
+
+**3. Auto-Play Sensitivity** ✅ FIXED
+- **Issue:** Auto-play triggered on mousePressed, preventing drag consideration
+- **Fixed:** Deferred drag to mouseDragged, auto-play only on mouseReleased with <15px movement
+
+**4. Stock Pile Drag Misalignment** ✅ FIXED
+- **Issue:** Drag preview misaligned from cursor on waste pile cards
+- **Fixed:** Set cascadeOffset=0 for stock, waste, and foundation piles (was defaulting to 25)
+
+### Round 3 - January 19, 2026
+
+**1. Card Spacing Reduction**
+- **Issue:** Cards could be even larger with tighter spacing between tableau stacks
+- **Current:** cardGap = 8px
+- **Expected:** Reduce to 4-6px for maximum card size on mobile screens
+- **Priority:** Medium (mobile UX optimization)
+
+**2. Stock & Foundation Position Swap**
+- **Issue:** Right-handed iPhone users struggle with stock pile on left
+- **Current:** Stock/waste on top left, foundations on top right
+- **Expected:** Stock/waste on top right, foundations on top left (better thumb access)
+- **Priority:** High (mobile ergonomics)
+
+**3. Foundation Suit Assignment**
+- **Issue:** Foundations pre-assigned to specific suits, not standard Klondike rules
+- **Current:** Each foundation slot shows suit emoji placeholder
+- **Expected Behavior:**
+  - Empty foundation slots show 'A' (Ace) placeholder
+  - First Ace placed on slot assigns that suit to the foundation
+  - Subsequent cards must match assigned suit
+  - Auto-play Aces to first available (unassigned) foundation from left
+- **Priority:** High (game rule accuracy)
+
+**4. Foundation Card Dragging**
+- **Issue:** Cards locked in foundations, can't be moved back to tableau
+- **Current:** Foundations not in draggable piles array
+- **Expected:** Allow dragging top card from foundation to tableau (recovery strategy for savvy players)
+- **Priority:** Medium (advanced gameplay feature)
+
+**5. Winnability & Dead-End Detection**
+- **Issue:** No validation that generated deals are winnable; no detection of dead-end states
+- **Current:** Random shuffle with no winnability check
+- **Expected:**
+  - Algorithm to validate deal is winnable before game start
+  - Detect when player has no valid moves (dead-end detection)
+  - Notify player when stuck vs when won
+- **Priority:** High (game quality, prevents frustration)
+
+**6. Victory Screen Button Overlap**
+- **Issue:** Victory screen covers bottom buttons, buttons cut off by iPhone rounded edge
+- **Current:** Buttons drawn at bottom, victory screen draws over them
+- **Expected:** Draw buttons on top of victory screen, center horizontally, move up to avoid screen edge
+- **Priority:** Medium (UI polish)
 
 ---
 
