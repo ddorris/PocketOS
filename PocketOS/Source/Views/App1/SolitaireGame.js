@@ -19,6 +19,9 @@ export default class SolitaireGame extends View {
 		this.cardHeight = 96;
 		this.topPadding = 30;        // Extra space at top before foundation/stock row
 		this.tableauTopPadding = 15; // Extra space before tableau piles
+		this.bottomBarHeight = 70;   // Height of bottom button bar
+		this.bottomBarColor = '#1e6b1e'; // Darker green for bottom bar
+		this.bottomBarY = 0;         // Will be set in calculateLayout
 		
 		// Piles (view representations)
 		this.tableau = [];      // 7 tableau piles
@@ -31,6 +34,9 @@ export default class SolitaireGame extends View {
 		this.dragOffset = { x: 0, y: 0 };
 		this.dragCurrentPos = { x: 0, y: 0 };
 		this.hoverTarget = null; // Currently hovered pile during drag
+		this.selectedCards = []; // Cards highlighted at their origin while dragging
+		// Optional override for tableau cascade spacing; if null, uses pile or responsive default
+		this.tableauCascadeOffset = 25;
 		
 		// Double-click detection
 		this.lastClickTime = 0;
@@ -55,11 +61,12 @@ export default class SolitaireGame extends View {
 			label: 'Reset',
 			x: 0,
 			y: 0,
-			width: 100,
-			height: 35,
-			bgColor: '#565758',
-			hoverColor: '#6a6a6c',
+			width: 80,
+			height: 40,
+			bgColor: '#4caf50',      // Lighter green
+			hoverColor: '#66bb6a',   // Even lighter green on hover
 			textColor: '#ffffff',
+			strokeColor: '#2e7d32',  // Darker green border
 			fontSize: 14,
 			onClick: () => this.newGame()
 		});
@@ -69,10 +76,11 @@ export default class SolitaireGame extends View {
 			x: 0,
 			y: 0,
 			width: 70,
-			height: 35,
-			bgColor: '#565758',
-			hoverColor: '#6a6a6c',
+			height: 40,
+			bgColor: '#4caf50',      // Lighter green
+			hoverColor: '#66bb6a',   // Even lighter green on hover
 			textColor: '#ffffff',
+			strokeColor: '#2e7d32',  // Darker green border
 			fontSize: 14,
 			onClick: () => this.undo()
 		});
@@ -82,10 +90,11 @@ export default class SolitaireGame extends View {
 			x: 0,
 			y: 0,
 			width: 70,
-			height: 35,
-			bgColor: '#2e7d32',
-			hoverColor: '#43a047',
+			height: 40,
+			bgColor: '#4caf50',      // Lighter green
+			hoverColor: '#66bb6a',   // Even lighter green on hover
 			textColor: '#ffffff',
+			strokeColor: '#2e7d32',  // Darker green border
 			fontSize: 14,
 			onClick: () => this.startAutoComplete()
 		});
@@ -120,8 +129,13 @@ export default class SolitaireGame extends View {
 					}
 					cardView.faceUp = c.faceUp;
 				} else {
-					// Create new card
-					cardView = new SolitaireCard({ ...c, isDebug: this.isDebug });
+					// Create new card - if it should be face up, start it face down and flip
+					if (c.faceUp) {
+						cardView = new SolitaireCard({ ...c, faceUp: false, isDebug: this.isDebug });
+						cardView.startFlip();
+					} else {
+						cardView = new SolitaireCard({ ...c, isDebug: this.isDebug });
+					}
 				}
 				
 				return cardView;
@@ -205,14 +219,17 @@ export default class SolitaireGame extends View {
 		
 		// Tableau row (below stock/foundation row, centered, with extra space)
 		const tableauY = topRowY + this.cardHeight + this.padding + this.tableauTopPadding;
+		const defaultCascade = Math.min(20, this.cardHeight * 0.2); // Responsive cascade spacing
 		this.tableau.forEach((pile, i) => {
 			pile.x = tableauStartX + i * (this.cardWidth + this.cardGap);
 			pile.y = tableauY;
-			pile.cascadeOffset = Math.min(20, this.cardHeight * 0.2); // Responsive cascade spacing
+			// Respect explicit game-level override first, then existing pile setting, else responsive default
+			pile.cascadeOffset = (this.tableauCascadeOffset ?? pile.cascadeOffset ?? defaultCascade);
 		});
 		
-		// Buttons (centered horizontally, moved up from bottom to avoid iPhone edge)
-		const buttonY = h - this.newGameButton.height; // Extra 15px to avoid rounded edge
+		// Bottom bar and buttons (centered in bottom bar)
+		this.bottomBarY = h - this.bottomBarHeight + this.appDockHeight;
+		const buttonY = this.bottomBarY + (this.bottomBarHeight - this.newGameButton.height) / 2;
 		const totalButtonWidth = this.newGameButton.width + 10 + this.undoButton.width;
 		const buttonsStartX = (w - totalButtonWidth) / 2;
 		
@@ -230,7 +247,7 @@ export default class SolitaireGame extends View {
 		// Background (classic solitaire green felt)
 		push();
 		noStroke();
-		fill(34, 139, 34);
+		fill(34, 139, 34); // Hex #228B22
 		rect(0, this.appDockHeight, width, height - this.appDockHeight);
 		pop();
 		
@@ -254,10 +271,7 @@ export default class SolitaireGame extends View {
 			if (this.dragSource && this.hoverTarget?.pile === pile) {
 				this.drawPileHighlight(pile, this.hoverTarget.valid);
 			}
-			pile.draw({
-				...drawConfig,
-				foundationSuit: this.model.foundationSuits[i]
-			});
+			pile.draw(drawConfig);
 		});
 		this.stock.draw(drawConfig);
 		this.waste.draw(drawConfig);
@@ -267,9 +281,20 @@ export default class SolitaireGame extends View {
 			this.drawDragPreview();
 		}
 		
-		// Draw buttons
-		this.newGameButton.draw();
-		this.undoButton.draw();
+		// Draw bottom bar
+		push();
+		noStroke();
+		fill(this.bottomBarColor);
+		rect(0, this.bottomBarY, width, this.bottomBarHeight);
+		pop();
+		
+		// Draw buttons (only Reset button on victory screen)
+		if (this.model.isGameWon()) {
+			this.newGameButton.draw();
+		} else {
+			this.newGameButton.draw();
+			this.undoButton.draw();
+		}
 		
 		// Check for win condition
 		if (this.model.isGameWon()) {
@@ -285,26 +310,31 @@ export default class SolitaireGame extends View {
 		
 		push();
 		// Semi-transparent cards being dragged
-		cards.forEach((card, i) => {
-			const offsetY = i * Math.min(25, this.cardHeight * 0.25);
-			// Draw with slight transparency
-			tint(255, 220);
-			card.draw({
-				spriteSheetSystem: this.spriteSheetSystem,
-				x: x,
-				y: y + offsetY,
-				width: this.cardWidth,
-				height: this.cardHeight
+			cards.forEach((card, i) => {
+				const offsetY = i * Math.min(25, this.cardHeight * 0.25);
+				// Draw with slight transparency
+				const wasHighlighted = card.highlighted;
+				card.setHighlight(false); // Let preview color reflect drag validity instead of selection highlight
+				tint(255, 220);
+				card.draw({
+					spriteSheetSystem: this.spriteSheetSystem,
+					x: x,
+					y: y + offsetY,
+					width: this.cardWidth,
+					height: this.cardHeight
+				});
+				card.setHighlight(wasHighlighted);
 			});
-		});
 		noTint();
 		pop();
 	}
 	
 	drawVictoryMessage() {
 		push();
+		// Semi-transparent overlay (don't cover bottom bar)
+		const overlayHeight = this.bottomBarY - this.appDockHeight;
 		fill(0, 0, 0, 150);
-		rect(0, this.appDockHeight, width, height - this.appDockHeight);
+		rect(0, this.appDockHeight, width, overlayHeight);
 		
 		fill(255, 215, 0);
 		textAlign(CENTER, CENTER);
@@ -315,32 +345,17 @@ export default class SolitaireGame extends View {
 		textSize(24);
 		textStyle(NORMAL);
 		fill(255);
-		text('Click "New Game" to play again', width / 2, height / 2);
-		
-		// Draw buttons centered on top of victory screen
-		const totalButtonWidth = this.newGameButton.width + 10 + this.undoButton.width + 10 + this.autoCompleteButton.width;
-		const buttonsStartX = (width - totalButtonWidth) / 2;
-		const buttonsY = height / 2 + 80; // Move up from bottom to avoid screen edge
-		
-		this.newGameButton.x = buttonsStartX;
-		this.newGameButton.y = buttonsY;
-		this.newGameButton.draw();
-		
-		this.undoButton.x = buttonsStartX + this.newGameButton.width + 10;
-		this.undoButton.y = buttonsY;
-		this.undoButton.draw();
-		
-		this.autoCompleteButton.x = buttonsStartX + this.newGameButton.width + 10 + this.undoButton.width + 10;
-		this.autoCompleteButton.y = buttonsY;
-		this.autoCompleteButton.draw();
+		text('Click "Reset" to play again', width / 2, height / 2);
 		
 		pop();
 	}
 	
 	drawDeadEndMessage() {
 		push();
+		// Semi-transparent overlay (don't cover bottom bar)
+		const overlayHeight = this.bottomBarY - this.appDockHeight;
 		fill(0, 0, 0, 150);
-		rect(0, this.appDockHeight, width, height - this.appDockHeight);
+		rect(0, this.appDockHeight, width, overlayHeight);
 		
 		fill(204, 85, 0); // Orange color for stuck state
 		textAlign(CENTER, CENTER);
@@ -351,20 +366,7 @@ export default class SolitaireGame extends View {
 		textSize(20);
 		textStyle(NORMAL);
 		fill(255);
-		text('Try using Undo or start a New Game', width / 2, height / 2);
-		
-		// Draw buttons centered on top of message
-		const totalButtonWidth = this.newGameButton.width + 10 + this.undoButton.width;
-		const buttonsStartX = (width - totalButtonWidth) / 2;
-		const buttonsY = height / 2 + 80;
-		
-		this.newGameButton.x = buttonsStartX;
-		this.newGameButton.y = buttonsY;
-		this.newGameButton.draw();
-		
-		this.undoButton.x = buttonsStartX + this.newGameButton.width + 10;
-		this.undoButton.y = buttonsY;
-		this.undoButton.draw();
+		text('Try using Undo or Reset', width / 2, height / 2);
 		
 		pop();
 	}
@@ -387,26 +389,55 @@ export default class SolitaireGame extends View {
 		
 		pop();
 	}
+
+	setSelectedCards(cards) {
+		this.clearSelectedCards();
+		this.selectedCards = cards;
+		this.selectedCards.forEach(c => c.setHighlight(true));
+	}
+
+	clearSelectedCards() {
+		if (this.selectedCards && this.selectedCards.length > 0) {
+			this.selectedCards.forEach(c => c.setHighlight(false));
+		}
+		this.selectedCards = [];
+	}
+
+	updateDragPreviewValidity(isValid) {
+		if (this.dragSource && this.dragSource.cards) {
+			this.dragSource.cards.forEach(c => c.setDragValid(isValid));
+		}
+	}
 	
 	mousePressed(mx, my) {
 		if (!this.isEnabled()) return false;
 		
 		// Check buttons first
-		if (this.newGameButton.checkClick(mx, my)) return true;
-		if (this.undoButton.checkClick(mx, my)) return true;
-		if (this.model.canAutoComplete() && !this.model.isGameWon() && this.autoCompleteButton.checkClick(mx, my)) return true;
+		if (this.newGameButton.checkClick(mx, my)) { this.clearSelectedCards(); return true; }
+		if (this.undoButton.checkClick(mx, my)) { this.clearSelectedCards(); return true; }
+		if (this.model.canAutoComplete() && !this.model.isGameWon() && this.autoCompleteButton.checkClick(mx, my)) { this.clearSelectedCards(); return true; }
 		
 		// Check stock click - draw card (don't auto-play yet)
 		if (this.stock.containsPoint(mx, my)) {
 			this.handleStockClick(false); // Don't auto-play on press
+			this.clearSelectedCards();
 			return true;
 		}
 		
 		// Track the card pressed for potential auto-play on release
-		this.pressedCard = this.findCardUnderCursor(mx, my);
+		const hitInfo = this.findCardUnderCursor(mx, my);
+		this.pressedHit = hitInfo;
+		this.pressedCard = hitInfo ? hitInfo.card : null;
 		this.pressedPos = { x: mx, y: my };
 		
-		return this.pressedCard !== null;
+		if (hitInfo) {
+			const count = hitInfo.cardCount || 1;
+			this.setSelectedCards(hitInfo.pile.cards.slice(hitInfo.cardIndex, hitInfo.cardIndex + count));
+			return true;
+		}
+		
+		this.clearSelectedCards();
+		return false;
 	}
 	
 	mouseDragged(mx, my) {
@@ -437,8 +468,10 @@ export default class SolitaireGame extends View {
 				}
 				
 				this.hoverTarget = { ...targetInfo, valid: isValid };
+				this.updateDragPreviewValidity(isValid);
 			} else {
 				this.hoverTarget = null;
+				this.updateDragPreviewValidity(false);
 			}
 			
 			return true;
@@ -467,13 +500,17 @@ export default class SolitaireGame extends View {
 			
 			// If user barely moved (within 15 pixels), consider it a click and try auto-play
 			if (dragDistance < 15) {
-				const wasMoved = this.tryAutoPlay(this.pressedCard);
+				const wasMoved = this.tryAutoPlay(this.pressedHit);
 				this.pressedCard = null;
+				this.clearSelectedCards();
+				this.pressedHit = null;
 				return wasMoved;
 			}
 		}
 		
 		this.pressedCard = null;
+		this.pressedHit = null;
+		this.clearSelectedCards();
 		return false;
 	}
 	
@@ -516,6 +553,7 @@ export default class SolitaireGame extends View {
 					x: this.dragSource.startX, 
 					y: this.dragSource.startY 
 				};
+				this.updateDragPreviewValidity(false);
 				
 				break;
 			}
@@ -557,6 +595,9 @@ export default class SolitaireGame extends View {
 		
 		// Clear drag state
 		cards.forEach(c => c.setDragging(false));
+		this.clearSelectedCards();
+		this.pressedHit = null;
+		this.pressedCard = null;
 		this.dragSource = null;
 	}
 	
@@ -579,6 +620,12 @@ export default class SolitaireGame extends View {
 	}
 	
 	newGame() {
+		// Clear existing piles to force all cards to be recreated with flip animations
+		this.tableau = [];
+		this.foundations = [];
+		this.stock = null;
+		this.waste = null;
+		
 		this.model.initializeGame();
 		this.syncPilesWithModel();
 	}
@@ -599,7 +646,7 @@ export default class SolitaireGame extends View {
 		for (const { pile, type, index } of draggablePiles) {
 			const hit = pile.hitTest(mx, my);
 			if (hit) {
-				return { card: hit.card, pile, type, index, cardIndex: hit.cardIndex };
+				return { card: hit.card, pile, type, index, cardIndex: hit.cardIndex, cardCount: hit.cardCount };
 			}
 		}
 		return null;
@@ -658,6 +705,7 @@ export default class SolitaireGame extends View {
 	
 	tryAutoPlay(clickedCard) {
 		// Try to auto-play a card: foundation first, then valid tableau pile (rightmost)
+		if (!clickedCard || !clickedCard.card || !clickedCard.pile) return false;
 		const card = clickedCard.card;
 		
 		// Only top cards can auto-play

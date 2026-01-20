@@ -14,6 +14,7 @@ export default class SolitaireCard extends View {
 		this.height = 0;
 		this.highlighted = false;
 		this.dragging = false;
+		this.dragValid = true; // Track whether current drag preview is valid for coloring
 		
 		// Flip animation state
 		this.isFlipping = false;
@@ -37,6 +38,7 @@ export default class SolitaireCard extends View {
 			this.isFlipping = true;
 			this.flipProgress = 0;
 			this.flipStartTime = millis();
+			this.flipStartFaceUp = this.faceUp; // Remember starting state
 		}
 	}
 	
@@ -52,6 +54,7 @@ export default class SolitaireCard extends View {
 			this.flipProgress = Math.min(1, elapsed / this.flipDuration);
 			if (this.flipProgress >= 1) {
 				this.isFlipping = false;
+				this.faceUp = !this.flipStartFaceUp; // Toggle to opposite of start state
 			}
 		}
 		
@@ -73,7 +76,9 @@ export default class SolitaireCard extends View {
 			
 			// Switch face at halfway point
 			const showFace = this.flipProgress > 0.5;
-			const displayIndex = showFace ? this.getCardIndex() : this.getBackIndex();
+			const displayIndex = showFace !== this.flipStartFaceUp 
+				? this.getCardIndex() 
+				: this.getBackIndex();
 			
 			// Draw card sprite with flip transform
 			spriteSheetSystem.drawTile({
@@ -98,6 +103,9 @@ export default class SolitaireCard extends View {
 		
 		pop();
 		
+		// Subtle edge/shadow border for visual separation
+		this.drawBorder();
+		
 		// Draw highlight/drag overlay
 		if (this.highlighted || this.dragging) {
 			this.drawOverlay();
@@ -113,7 +121,25 @@ export default class SolitaireCard extends View {
 		push();
 		noFill();
 		strokeWeight(3);
-		stroke(this.highlighted ? color(0, 102, 204) : color(0, 204, 102));
+		// Green for selection/valid drag, red when drag target is invalid (only for preview)
+		let strokeColor = color(0, 204, 102);
+		if (this.dragging && !this.highlighted) {
+			strokeColor = this.dragValid ? color(0, 204, 102) : color(204, 0, 0);
+		} else if (this.highlighted) {
+			strokeColor = color(0, 204, 102);
+		}
+		stroke(strokeColor);
+		rect(this.x, this.y, this.width, this.height, 4);
+		pop();
+	}
+
+	// Draw a subtle outline to give cards a bit of edge/shadow
+	drawBorder() {
+		push();
+		noFill();
+		// Very subtle dark stroke as a soft shadow
+		stroke(0, 0, 0, 50);
+		strokeWeight(1.5);
 		rect(this.x, this.y, this.width, this.height, 4);
 		pop();
 	}
@@ -129,6 +155,13 @@ export default class SolitaireCard extends View {
 	
 	setDragging(enabled) {
 		this.dragging = enabled;
+		if (!enabled) {
+			this.dragValid = true;
+		}
+	}
+
+	setDragValid(isValid) {
+		this.dragValid = isValid;
 	}
 	
 	// Helper methods for card properties
