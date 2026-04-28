@@ -41,3 +41,18 @@ export function buildMiniLayout() {
 		slots: coords.map((c, i) => ({ id: `m${i}`, ...c }))
 	};
 }
+
+
+export function buildDebugLayout() {
+	// For debugging we just want to see all of the cards in a simple grid with no overlaps, so we can verify the sprite sheet mapping and hit testing
+	const slots = [];
+	let idCounter = 0;
+	const cols = 9;
+	const rows = 10;
+	for (let y = 0; y < rows; y++) {
+		for (let x = 0; x < cols; x++) {
+			slots.push({ id: `d${idCounter++}`, gx: x, gy: y, layer: 0 });
+		}
+	}
+	return { name: 'debug', slots };
+}

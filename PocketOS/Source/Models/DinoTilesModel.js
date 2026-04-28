@@ -27,10 +27,10 @@ export default class DinoTilesModel extends Model {
 	buildTripletDeck(slotCount, configs) {
 		const usableSlots = slotCount - (slotCount % 3);
 		const totalTriplets = usableSlots / 3;
-		const allFaces = Array.from({ length: 28 }, (_, i) => i);
+		const allFaces = Array.from({ length: 54 }, (_, i) => i);
 		const cfgArray = Array.isArray(configs)
 			? configs
-			: (configs ? [configs] : [{ facesCount: 26, tripletsPerFace: 1 }]);
+			: (configs ? [configs] : [{ facesCount: 54, tripletsPerFace: 1 }]);
 
 		// Shuffle a working pool of all faces for random selection without replacement across configs
 		const facesPool = [...allFaces];

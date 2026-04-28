@@ -53,6 +53,15 @@
 			"spriteSheets": [
 				{
 					"key": "dinotiles",
+					"url": "./PocketOS/Assets/Mahjong.png",
+					"sx": [37, 285, 520, 757, 1003, 1250, 1486, 1724, 1968],
+					"sy": [40, 342, 647, 951, 1255, 1559],
+					"sw": 233, "sh": 302,
+					"cols": 9,	"rows": 6,
+					"dw": 38, "dh": 52
+				},
+				{
+					"key": "dinotilesClassic",
 					"url": "./PocketOS/Assets/DinoTiles.png",
 					"sx": [37, 285, 520, 757],
 					"sy": [40, 342, 647, 951, 1255, 1559, 1863],

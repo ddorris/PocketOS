@@ -1,7 +1,7 @@
 // DinoBoard - View component for rendering and hit-testing the game board
 import View from '../../Core/View.js';
 import DinoTile from './DinoTile.js';
-import { buildTurtleLayout } from '../../Models/Layout/DinoLayout.js';
+import { buildTurtleLayout, buildDebugLayout } from '../../Models/Layout/DinoLayout.js';
 
 export default class DinoBoard extends View {
 	constructor(model, spriteSheetSystem, sheetKey = 'dinotiles') {
@@ -22,6 +22,7 @@ export default class DinoBoard extends View {
 			const sheetMeta = this.spriteSheetSystem?.engine?.state?.spriteSheets?.[this.sheetKey];
 			if (!sheetMeta) return;
 			const layout = buildTurtleLayout();
+			// const layout = buildDebugLayout();
 			this.model.initializeGame(layout, deckConfigs);
 		}
 		this.updateTileViews();
