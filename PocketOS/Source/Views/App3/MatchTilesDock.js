@@ -1,12 +1,12 @@
-// DinoDock - Manages clicked DinoTile instances and tracks game state
+// MatchTilesDock - Manages clicked MatchTile instances and tracks game state
 import View from '../../Core/View.js';
-import DinoTile from './DinoTile.js';
+import MatchTile from './MatchTile.js';
 
-export default class DinoDock extends View {
+export default class MatchTilesDock extends View {
 	constructor() {
 		super();
 		this.maxDockTiles = 8;
-		this.tiles = []; // Array of DinoTile instances
+		this.tiles = []; // Array of MatchTile instances
 		this.gameState = 'playing'; // 'playing', 'won', 'lost'
 		this.dockHeight = 80;
 		this.dockY = 0; // Will be set in windowResized or based on height
@@ -26,13 +26,13 @@ export default class DinoDock extends View {
 		this.layoutTiles();
 	}
 
-	addTile(dinoTile) {
+	addTile(tile) {
 		if (this.gameState !== 'playing') return false;
 
 		// Create a new tile for the dock with fixed slot dimensions
-		const dockTile = new DinoTile({
-			sheetKey: dinoTile.sheetKey,
-			tileIndex: dinoTile.tileIndex,
+		const dockTile = new MatchTile({
+			sheetKey: tile.sheetKey,
+			tileIndex: tile.tileIndex,
 			dx: 0, // Will be positioned during layout
 			dy: this.dockY,
 			dw: this.slotWidth,
@@ -96,10 +96,10 @@ export default class DinoDock extends View {
 		// Draw dock background
 		noStroke();
 		// dfb37d
-		fill(0xDF, 0xB3, 0x7D);
+		fill("#1ca5d6");
 		rect(0, this.dockY, width, this.dockHeight);
 		// f6ddb9
-		stroke(0xF6, 0xDD, 0xB9);
+		stroke("#6ec4e4");
 		strokeWeight(1);
 		line(0, this.dockY, width, this.dockY);
 		line(0, this.dockY + this.dockHeight - 1, width, this.dockY + this.dockHeight - 1);
@@ -131,7 +131,7 @@ export default class DinoDock extends View {
 
 			// Draw empty slot outline
 			noFill();
-			stroke(0xEF, 0xD0, 0xA4);
+			stroke("#0093ce");
 			strokeWeight(2);
 			rect(x + inset, y + inset, this.slotWidth - inset * 2, this.slotHeight - inset * 2, 3);
 		}

@@ -1,10 +1,10 @@
-// DinoBoard - View component for rendering and hit-testing the game board
+// MatchTilesBoard - View component for rendering and hit-testing the game board
 import View from '../../Core/View.js';
-import DinoTile from './DinoTile.js';
-import { buildTurtleLayout, buildDebugLayout } from '../../Models/Layout/DinoLayout.js';
+import MatchTile from './MatchTile.js';
+import { buildTurtleLayout, buildDebugLayout } from '../../Models/Layout/MatchTilesLayout.js';
 
-export default class DinoBoard extends View {
-	constructor(model, spriteSheetSystem, sheetKey = 'dinotiles') {
+export default class MatchTilesBoard extends View {
+	constructor(model, spriteSheetSystem, sheetKey = 'mahjong') {
 		super();
 		this.model = model;
 		this.spriteSheetSystem = spriteSheetSystem;
@@ -63,7 +63,7 @@ export default class DinoBoard extends View {
 		for (const tile of tiles) {
 			const dx = startX + tile.gx * (scaledDw + scaledPadding);
 			const dy = startY + tile.gy * (scaledDh + scaledPadding);
-			const view = new DinoTile({
+			const view = new MatchTile({
 				sheetKey: this.sheetKey,
 				tileIndex: tile.tileIndex,
 				dx,

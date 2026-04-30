@@ -1,17 +1,17 @@
 import App from '../Core/App.js';
 import AppInfo from '../Views/AppInfo.js';
-import DinoDock from '../Views/App3/DinoDock.js';
-import DinoBoard from '../Views/App3/DinoBoard.js';
+import MatchTilesDock from '../Views/App3/MatchTilesDock.js';
+import MatchTilesBoard from '../Views/App3/MatchTilesBoard.js';
 import Button from '../Views/Button.js';
 import SpriteSheetSystem from '../Systems/SpriteSheetSystem.js';
-import DinoTilesModel from '../Models/DinoTilesModel.js';
+import MatchTilesModel from '../Models/MatchTilesModel.js';
 
 export default class App3 extends App {
 	constructor() {
 		super();
-		this.model = new DinoTilesModel();
-		this.dinoBoard = null;
-		this.dinoDock = new DinoDock();
+		this.model = new MatchTilesModel();
+		this.matchTilesBoard = null;
+		this.matchTilesDock = new MatchTilesDock();
 		this.resetButton = null;
 		this.isDebug = false;
 		this.appDockHeight = 120;
@@ -20,7 +20,7 @@ export default class App3 extends App {
 			const btnWidth = this.resetButton.width;
 			const btnHeight = this.resetButton.height;
 			const x = (typeof width !== 'undefined' ? width : 0) - 80;
-			const y = this.dinoDock.dockY + (this.dinoDock.dockHeight - btnHeight) / 2;
+			const y = this.matchTilesDock.dockY + (this.matchTilesDock.dockHeight - btnHeight) / 2;
 			this.resetButton.setBounds(x, y, btnWidth, btnHeight);
 		};
 	}
@@ -35,19 +35,19 @@ export default class App3 extends App {
 		const spriteSheetSystem = this.engine.systems.find(s => s instanceof SpriteSheetSystem);
 		if (!spriteSheetSystem) return;
 
-		// Initialize DinoDock
-		this.dinoDock.setSpriteSheetSystem(spriteSheetSystem);
-		const sheetMeta = this.engine.state.spriteSheets?.['dinotiles'];
+		// Initialize MatchTilesDock
+		this.matchTilesDock.setSpriteSheetSystem(spriteSheetSystem);
+		const sheetMeta = this.engine.state.spriteSheets?.['mahjong'];
 		if (sheetMeta) {
-			this.dinoDock.slotWidth = sheetMeta.dw;
-			this.dinoDock.slotHeight = sheetMeta.dh;
-			this.dinoDock.tileSpacing = sheetMeta.dw + 1;
+			this.matchTilesDock.slotWidth = sheetMeta.dw;
+			this.matchTilesDock.slotHeight = sheetMeta.dh;
+			this.matchTilesDock.tileSpacing = sheetMeta.dw + 1;
 		}
 
-		// Initialize DinoBoard
-		this.dinoBoard = new DinoBoard(this.model, spriteSheetSystem, 'dinotiles');
-		this.dinoBoard.spriteSheetSystem = spriteSheetSystem; // Inject for access to engine/state
-		this.dinoBoard.isDebug = this.isDebug;
+		// Initialize MatchTilesBoard
+		this.matchTilesBoard = new MatchTilesBoard(this.model, spriteSheetSystem, 'mahjong');
+		this.matchTilesBoard.spriteSheetSystem = spriteSheetSystem; // Inject for access to engine/state
+		this.matchTilesBoard.isDebug = this.isDebug;
 
 		// Create reset button once
 		this.resetButton = new Button({
@@ -57,14 +57,14 @@ export default class App3 extends App {
 			y: 0,
 			width: 60,
 			height: 40,
-			bgColor: '#efd0a4',
-			hoverColor: '#f5dcb7',
-			textColor: '#866035',
-			strokeColor: '#866035',
+			bgColor: '#0093ce',
+			hoverColor: '#1ca5d6',
+			textColor: '#ffffff',
+			strokeColor: '#00587a',
 			onClick: () => {
-				this.dinoDock.reset();
-				this.dinoBoard?.initialize();
-				this.dinoDock.updateLayout(typeof width !== 'undefined' ? width : 0, typeof height !== 'undefined' ? height : 0);
+				this.matchTilesDock.reset();
+				this.matchTilesBoard?.initialize();
+				this.matchTilesDock.updateLayout(typeof width !== 'undefined' ? width : 0, typeof height !== 'undefined' ? height : 0);
 				this.setResetButtonBounds();
 			}
 		});
@@ -78,18 +78,18 @@ export default class App3 extends App {
 
 		// Background
 		noStroke();
-		fill(0xEF, 0xD0, 0xA4);
+		fill("#0093ce");
 		rect(0, this.appDockHeight, width, height - this.appDockHeight);
 
 		// Render game elements
-		this.dinoBoard?.draw();
-		this.dinoDock.draw(this.dinoBoard?.spriteSheetSystem);
-		this.dinoDock.updateGameState(this.model.isGameWon());
+		this.matchTilesBoard?.draw();
+		this.matchTilesDock.draw(this.matchTilesBoard?.spriteSheetSystem);
+		this.matchTilesDock.updateGameState(this.model.isGameWon());
 		this.resetButton?.draw();
 	}
 
 	windowResized() {
-		this.dinoDock.updateLayout(typeof width !== 'undefined' ? width : 0, typeof height !== 'undefined' ? height : 0);
+		this.matchTilesDock.updateLayout(typeof width !== 'undefined' ? width : 0, typeof height !== 'undefined' ? height : 0);
 		this.setResetButtonBounds();
 	}
 
@@ -100,17 +100,17 @@ export default class App3 extends App {
 		if (this.resetButton && this.resetButton.checkClick(mouseX, mouseY)) return true;
 
 		// Don't allow tile clicks if game is over
-		if (this.dinoDock.isGameOver()) return false;
+		if (this.matchTilesDock.isGameOver()) return false;
 
 		// Find tile at pixel
-		const candidate = this.dinoBoard?.findTopmostTileAtPixel(mouseX, mouseY);
+		const candidate = this.matchTilesBoard?.findTopmostTileAtPixel(mouseX, mouseY);
 		if (candidate && this.model.isSelectable(candidate)) {
 			// Add to dock
 			const dockTile = {
-				sheetKey: 'dinotiles',
+				sheetKey: 'mahjong',
 				tileIndex: candidate.tileIndex
 			};
-			if (this.dinoDock.addTile(dockTile)) {
+			if (this.matchTilesDock.addTile(dockTile)) {
 				this.model.selectTile(candidate);
 			}
 			return true;

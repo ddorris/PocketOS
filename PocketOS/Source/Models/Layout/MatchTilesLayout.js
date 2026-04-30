@@ -1,4 +1,4 @@
-// Layout definitions and helpers for stacked Dino Tiles boards
+// Layout definitions and helpers for stacked Match Tiles boards
 export function buildTurtleLayout() {
 	// Symmetric turtle-style stack with visible offsets between layers; total 78 slots (divisible by 3)
 	const slots = [];

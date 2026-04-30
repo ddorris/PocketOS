@@ -1,6 +1,6 @@
 import Model from '../Core/Model.js';
-// DinoTiles - Game model for stacked tile matching
-export default class DinoTilesModel extends Model {
+
+export default class MatchTilesModel extends Model {
 	constructor() {
 		super();
 		this.tiles = [];
