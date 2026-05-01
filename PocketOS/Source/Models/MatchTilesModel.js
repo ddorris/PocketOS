@@ -32,6 +32,9 @@ export default class MatchTilesModel extends Model {
 		if (themeKey === 'dinotiles') {
 			this.totalFaces = 28;
 		}
+		if (themeKey === 'loteria') {
+			this.totalFaces = 102;
+		}
 	}
 
 	buildTripletDeck(slotCount, configs) {

@@ -9,7 +9,7 @@ export default class MatchTilesBoard extends View {
 		this.model = model;
 		this.spriteSheetSystem = spriteSheetSystem;
 		this.sheetKey = sheetKey;
-		this.sheetKeyNames = ['mahjong', 'dinotiles'];
+		this.sheetKeyNames = ['mahjong', 'dinotiles', 'loteria'];
 		this.tileViews = new Map(); // Maps tile id -> {view, dx, dy, dw, dh}
 		this.layoutStartY = 200;
 		this.isDebug = false;
