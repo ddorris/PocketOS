@@ -9,11 +9,13 @@ export default class MatchTilesBoard extends View {
 		this.model = model;
 		this.spriteSheetSystem = spriteSheetSystem;
 		this.sheetKey = sheetKey;
+		this.sheetKeyNames = ['mahjong', 'dinotiles'];
 		this.tileViews = new Map(); // Maps tile id -> {view, dx, dy, dw, dh}
 		this.layoutStartY = 200;
 		this.isDebug = false;
 		this.maxBoardWidth = 400; // Maximum width for board rendering (tunable)
 		this.lastAvailableWidth = typeof width !== 'undefined' ? width : 800;
+		this.model.setTheme(this.sheetKey);
 	}
 
 	initialize(deckConfigs = [{ facesCount: 9, tripletsPerFace: 2 }, { facesCount: 8, tripletsPerFace: 1 }]) {
@@ -26,6 +28,26 @@ export default class MatchTilesBoard extends View {
 			this.model.initializeGame(layout, deckConfigs);
 		}
 		this.updateTileViews();
+	}
+
+	changeTheme()
+	{
+		// We have two themes currently: Mahjong (default) and DinoTiles (when theme is toggled)
+		// but it should be easy to add more themes in the future by just changing the sprite sheet key and ensuring the new sprite sheet has the same layout
+		// Different themes may have more or less sprites, but the layouts supported will work as long as there are 3 or more of each tile type for matching,
+		// and the sprite sheet system has the appropriate sheet key with the expected sprite dimensions and positions within the spritesheet image
+		// Since it is acceptable to have multiple triples of the same tile type on the board, we don't need to worry about themes not having enough sprites in their sprite sheet
+		// since we can repeat tile types as needed to fill the layout we are using
+		// Similarly a sprite sheet may have more sprites than we use in the current layout, but that is not an issue since we can select just a subset of sprites
+		// ensuring to randomize within the available sprites for the theme to keep things visually interesting and not exclude some sprites from being used in the game
+		
+		// Cycle through available themes
+		const currentIndex = this.sheetKeyNames.indexOf(this.sheetKey);
+		const nextIndex = (currentIndex + 1) % this.sheetKeyNames.length;
+		this.sheetKey = this.sheetKeyNames[nextIndex];
+		this.model.setTheme(this.sheetKey);
+
+		this.initialize(); // Re-initialize the game with the new theme
 	}
 
 	updateTileViews() {

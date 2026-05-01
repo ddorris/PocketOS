@@ -13,6 +13,7 @@ export default class App3 extends App {
 		this.matchTilesBoard = null;
 		this.matchTilesDock = new MatchTilesDock();
 		this.resetButton = null;
+		this.themeButton = null;
 		this.isDebug = false;
 		this.appDockHeight = 120;
 		this.setResetButtonBounds = () => {
@@ -22,6 +23,14 @@ export default class App3 extends App {
 			const x = (typeof width !== 'undefined' ? width : 0) - 80;
 			const y = this.matchTilesDock.dockY + (this.matchTilesDock.dockHeight - btnHeight) / 2;
 			this.resetButton.setBounds(x, y, btnWidth, btnHeight);
+		};
+		this.setThemeButtonBounds = () => {
+			if (!this.themeButton) return;
+			const btnWidth = this.themeButton.width;
+			const btnHeight = this.themeButton.height;
+			const x = (typeof width !== 'undefined' ? width : 0) - 80;
+			const y = this.matchTilesDock.dockY + (this.matchTilesDock.dockHeight - btnHeight) / 2 - 80;
+			this.themeButton.setBounds(x, y, btnWidth, btnHeight);
 		};
 	}
 
@@ -71,6 +80,28 @@ export default class App3 extends App {
 
 		// Reset/setup game state
 		this.resetButton?.onClick();
+
+		// Create theme button once
+		this.themeButton = new Button({
+			id: 'theme',
+			label: 'Theme',
+			x: 0,
+			y: 0,
+			width: 60,
+			height: 40,
+			bgColor: '#565758',
+			hoverColor: '#6a6a6c',
+			textColor: '#ffffff',
+			strokeColor: '#6a6a6c',
+			onClick: () => {
+				this.matchTilesBoard?.changeTheme();
+				this.setThemeButtonBounds();
+				this.resetButton?.onClick();
+			}
+		});
+
+		this.setResetButtonBounds();
+		this.setThemeButtonBounds();
 	}
 
 	draw() {
@@ -86,18 +117,21 @@ export default class App3 extends App {
 		this.matchTilesDock.draw(this.matchTilesBoard?.spriteSheetSystem);
 		this.matchTilesDock.updateGameState(this.model.isGameWon());
 		this.resetButton?.draw();
+		this.themeButton?.draw();
 	}
 
 	windowResized() {
 		this.matchTilesDock.updateLayout(typeof width !== 'undefined' ? width : 0, typeof height !== 'undefined' ? height : 0);
 		this.setResetButtonBounds();
+		this.setThemeButtonBounds();
 	}
 
 	mousePressed() {
 		if (mouseY < this.appDockHeight) return false;
 
-		// Check reset button
+		// Check reset button and theme button clicks
 		if (this.resetButton && this.resetButton.checkClick(mouseX, mouseY)) return true;
+		if (this.themeButton && this.themeButton.checkClick(mouseX, mouseY)) return true;
 
 		// Don't allow tile clicks if game is over
 		if (this.matchTilesDock.isGameOver()) return false;
@@ -107,7 +141,7 @@ export default class App3 extends App {
 		if (candidate && this.model.isSelectable(candidate)) {
 			// Add to dock
 			const dockTile = {
-				sheetKey: 'mahjong',
+				sheetKey: this.matchTilesBoard.sheetKey,
 				tileIndex: candidate.tileIndex
 			};
 			if (this.matchTilesDock.addTile(dockTile)) {

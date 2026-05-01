@@ -4,6 +4,7 @@ export default class MatchTilesModel extends Model {
 	constructor() {
 		super();
 		this.tiles = [];
+		this.totalFaces = 1;
 	}
 
 	initializeGame(layout, deckConfigs) {
@@ -24,13 +25,22 @@ export default class MatchTilesModel extends Model {
 		this.computeBlockingRelationships();
 	}
 
+	setTheme(themeKey) {
+		if (themeKey === 'mahjong') {
+			this.totalFaces = 54;
+		}
+		if (themeKey === 'dinotiles') {
+			this.totalFaces = 28;
+		}
+	}
+
 	buildTripletDeck(slotCount, configs) {
 		const usableSlots = slotCount - (slotCount % 3);
 		const totalTriplets = usableSlots / 3;
-		const allFaces = Array.from({ length: 54 }, (_, i) => i);
+		const allFaces = Array.from({ length: this.totalFaces }, (_, i) => i);
 		const cfgArray = Array.isArray(configs)
 			? configs
-			: (configs ? [configs] : [{ facesCount: 54, tripletsPerFace: 1 }]);
+			: (configs ? [configs] : [{ facesCount: this.totalFaces, tripletsPerFace: 1 }]);
 
 		// Shuffle a working pool of all faces for random selection without replacement across configs
 		const facesPool = [...allFaces];
@@ -46,7 +56,7 @@ export default class MatchTilesModel extends Model {
 
 		for (const cfg of cfgArray) {
 			if (emittedTriplets >= totalTriplets) break;
-			const desiredFaces = Math.max(0, Math.min(cfg.facesCount ?? 0, allFaces.length - chosenFaceSet.size));
+			const desiredFaces = Math.max(0, Math.min(cfg.facesCount ?? 0, this.totalFaces - chosenFaceSet.size));
 			const perFaceTriplets = Math.max(cfg.tripletsPerFace ?? 1, 1);
 
 			// Choose distinct faces for this config from the global pool
