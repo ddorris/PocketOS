@@ -95,11 +95,9 @@ export default class MatchTilesDock extends View {
 
 		// Draw dock background
 		noStroke();
-		// dfb37d
-		fill("#1ca5d6");
+		fill(18);
 		rect(0, this.dockY, width, this.dockHeight);
-		// f6ddb9
-		stroke("#6ec4e4");
+		stroke(50);
 		strokeWeight(1);
 		line(0, this.dockY, width, this.dockY);
 		line(0, this.dockY + this.dockHeight - 1, width, this.dockY + this.dockHeight - 1);
@@ -131,7 +129,7 @@ export default class MatchTilesDock extends View {
 
 			// Draw empty slot outline
 			noFill();
-			stroke("#0093ce");
+			stroke("#6a6a6c");
 			strokeWeight(2);
 			rect(x + inset, y + inset, this.slotWidth - inset * 2, this.slotHeight - inset * 2, 3);
 		}

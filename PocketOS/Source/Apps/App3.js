@@ -57,10 +57,10 @@ export default class App3 extends App {
 			y: 0,
 			width: 60,
 			height: 40,
-			bgColor: '#0093ce',
-			hoverColor: '#1ca5d6',
+			bgColor: '#565758',
+			hoverColor: '#6a6a6c',
 			textColor: '#ffffff',
-			strokeColor: '#00587a',
+			strokeColor: '#6a6a6c',
 			onClick: () => {
 				this.matchTilesDock.reset();
 				this.matchTilesBoard?.initialize();
@@ -78,7 +78,7 @@ export default class App3 extends App {
 
 		// Background
 		noStroke();
-		fill("#0093ce");
+		fill("#000000");
 		rect(0, this.appDockHeight, width, height - this.appDockHeight);
 
 		// Render game elements
